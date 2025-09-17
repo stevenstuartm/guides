@@ -1,4 +1,4 @@
-# Comprehensive Security Study Guide
+# Security Study Guide
 
 > **Quick Reference**: A practical study guide covering security fundamentals, threat landscape, frameworks, and modern practices (2025 edition)
 

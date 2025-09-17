@@ -1,4 +1,4 @@
-# Complete SEO Guide & Checklist for 2025
+# SEO Guide & Checklist for 2025
 
 ## Table of Contents
 
