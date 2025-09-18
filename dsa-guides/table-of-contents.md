@@ -3,7 +3,8 @@
 ## Table of Contents
 
 ### Foundation Concepts
-- **[Big O Notation & Complexity Analysis](asymptotic-notation-guide.md)** - Time/space complexity, common patterns, analysis techniques
+- **[Big O Basics](big-o-basics.md)** - Beginner-friendly introduction to time/space complexity
+- **[Advanced Complexity Analysis](asymptotic-notation-guide.md)** - Mathematical analysis, amortized complexity, advanced patterns
 - **[Recursion](recursion.md)** - Base cases, recursive thinking, memoization, common patterns
 
 ### Linear Data Structures
@@ -13,11 +14,13 @@
 
 ### Non-Linear Data Structures
 - **[Hash Tables](hash-tables.md)** - Hash functions, collision handling, practical usage
-- **[Trees](trees.md)** - General trees, binary search trees, tries, tree traversal algorithms
+- **[Tree Fundamentals](trees-basics.md)** - Basic trees, BSTs, traversals, common operations
+- **[Advanced Trees](trees-advanced.md)** - Tries, balanced trees, segment trees, specialized structures
 - **[Heaps](heaps.md)** - Min/max heaps, priority queues, heap operations
 
 ### Graph Structures
-- **[Graphs](graphs.md)** - Graph representation, types, basic operations, DFS, BFS, pathfinding, topological sort, Dijkstra, A*, minimum spanning trees
+- **[Graph Fundamentals](graphs-basics.md)** - Graph representation, traversal, basic algorithms
+- **[Advanced Graph Algorithms](graphs-advanced.md)** - Shortest paths, MST, network flow, specialized algorithms
 
 ### Core Algorithms
 - **[Algorithm Design Paradigms](algorithm-design.md)** - Dynamic programming, greedy algorithms, divide & conquer, backtracking
@@ -31,10 +34,14 @@
 
 ## How to Use This Guide
 
-**For Learning:** Start with Foundation Concepts, then move through Linear → Non-Linear → Graph structures. Learn algorithms after understanding the data structures they operate on.
+**For Beginners:** Start with Big O Basics and Tree/Graph Fundamentals. These provide gentle introductions with real-world analogies.
 
-**For Interview Prep:** Focus on Decision Guide first, then drill specific algorithms based on common interview patterns.
+**For Interview Prep:** Focus on Decision Guide first, then drill Algorithm Design Paradigms and basic data structures.
+
+**For Advanced Learning:** After mastering basics, explore Advanced Trees, Advanced Graph Algorithms, and Advanced Complexity Analysis.
 
 **For Quick Reference:** Use the Complexity Cheat Sheet and Decision Guide for rapid lookup during problem-solving.
 
-**Language Coverage:** Each file contains C# implementations with practical "when to use" guidance and modern .NET best practices.
+**Learning Progression:** Foundation Concepts → Linear Structures → Basic Non-Linear → Advanced Structures → Algorithms → Reference Materials
+
+**Language Coverage:** All examples use C# with modern .NET best practices, practical "when to use" guidance, and real-world applications.
