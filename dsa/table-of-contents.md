@@ -4,7 +4,7 @@
 
 ### Foundation Concepts
 - **[Big O Basics](big-o-basics.md)** - Beginner-friendly introduction to time/space complexity
-- **[Advanced Complexity Analysis](asymptotic-notation-guide.md)** - Mathematical analysis, amortized complexity, advanced patterns
+- **[Advanced Complexity Analysis](asymptotic-notation.md)** - Mathematical analysis, amortized complexity, advanced patterns
 - **[Recursion](recursion.md)** - Base cases, recursive thinking, memoization, common patterns
 
 ### Linear Data Structures
