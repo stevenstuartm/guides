@@ -1,3 +1,5 @@
+[← Back to Table of Contents](table-of-contents.md)
+
 # Hash Tables
 
 ## Why Hash Tables Exist

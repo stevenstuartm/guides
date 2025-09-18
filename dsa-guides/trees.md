@@ -1,3 +1,5 @@
+[← Back to Table of Contents](table-of-contents.md)
+
 # Trees & Binary Search Trees
 
 ## Why Trees Exist

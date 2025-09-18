@@ -1,3 +1,5 @@
+[← Back to Table of Contents](table-of-contents.md)
+
 # Sorting Algorithms
 
 ## Why Sorting Exists
