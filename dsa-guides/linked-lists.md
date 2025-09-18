@@ -17,7 +17,7 @@ Dynamic sizing without pre-allocating memory, efficient insertion/deletion anywh
 - Memory overhead is a concern (extra pointers per node)
 - Working with small, fixed-size datasets
 
-**Modern reality:** Most languages have dynamic arrays (Python `list`, C# `List<T>`) that are usually better. Linked lists are primarily educational or for very specific use cases.
+**Modern reality:** Most languages have dynamic arrays (C# `List<T>`) that are usually better. Linked lists are primarily educational or for very specific use cases.
 
 ## Time Complexity
 
@@ -35,9 +35,7 @@ Dynamic sizing without pre-allocating memory, efficient insertion/deletion anywh
 
 ## Node Implementation
 
-### Python Node
-
-### C# Node
+### Node Implementation
 ```csharp
 public class Node<T>
 {
@@ -57,8 +55,6 @@ public class Node<T>
 ```
 
 ## Singly Linked List
-
-### Python Implementation
 
 ### C# Implementation
 ```csharp
@@ -158,8 +154,6 @@ Console.WriteLine(ll.StringifyList()); // A -> C -> null
 - Memory is constrained (50% more pointers)
 - Only need forward traversal
 - Working with simple, small datasets
-
-### Python Implementation
 
 ### C# Implementation
 ```csharp
@@ -319,14 +313,71 @@ public class DoublyLinkedList<T> where T : IEquatable<T>
 ## Common Interview Problems
 
 ### 1. Reverse a Linked List
+```csharp
+public static class LinkedListProblems
+{
+    public static Node<T> ReverseLinkedList<T>(Node<T> head) where T : IEquatable<T>
+    {
+        Node<T> prev = null;
+        Node<T> current = head;
+
+        while (current != null)
+        {
+            Node<T> nextNode = current.GetLinkNode();
+            current.SetLinkNode(prev);
+            prev = current;
+            current = nextNode;
+        }
+
+        return prev; // prev is the new head
+    }
+}
+```
 
 ### 2. Detect Cycle (Floyd's Cycle Detection)
+```csharp
+public static bool HasCycle<T>(Node<T> head) where T : IEquatable<T>
+{
+    if (head == null) return false;
+
+    Node<T> slow = head;
+    Node<T> fast = head;
+
+    while (fast != null && fast.GetLinkNode() != null)
+    {
+        slow = slow.GetLinkNode();
+        fast = fast.GetLinkNode().GetLinkNode();
+
+        if (slow == fast)
+            return true;
+    }
+
+    return false;
+}
+```
 
 ### 3. Find Middle Node
+```csharp
+public static Node<T> FindMiddle<T>(Node<T> head) where T : IEquatable<T>
+{
+    if (head == null) return null;
+
+    Node<T> slow = head;
+    Node<T> fast = head;
+
+    // Move fast pointer 2 steps and slow pointer 1 step
+    while (fast != null && fast.GetLinkNode() != null)
+    {
+        slow = slow.GetLinkNode();
+        fast = fast.GetLinkNode().GetLinkNode();
+    }
+
+    return slow; // slow is at the middle
+}
+```
 
 ## Modern Usage Notes
 
-**Python:** Use `collections.deque` for double-ended operations or just `list`
 **C#:** Use `LinkedList<T>` from System.Collections.Generic or `List<T>`
 
 **Interview focus:** Understand pointer manipulation, edge cases (empty list, single node), and common algorithms like cycle detection and reversal.

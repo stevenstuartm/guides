@@ -39,28 +39,14 @@ Each recursive call must get "closer" to the base case to ensure termination.
 ## Classic Examples
 
 ### Factorial
-```python
-def factorial(n):
-    # Base case
-    if n <= 1:
-        return 1
-    
-    # Recursive case: n! = n * (n-1)!
-    return n * factorial(n - 1)
-
-# Example usage
-print(factorial(5))  # 120
-print(factorial(0))  # 1
-```
-
 ```csharp
 public static int Factorial(int n)
 {
     // Base case
     if (n <= 1)
         return 1;
-    
-    // Recursive case
+
+    // Recursive case: n! = n * (n-1)!
     return n * Factorial(n - 1);
 }
 
@@ -70,70 +56,56 @@ Console.WriteLine(Factorial(0)); // 1
 ```
 
 ### Fibonacci Sequence
-```python
-def fibonacci_naive(n):
-    """Naive recursive fibonacci - exponential time complexity"""
-    if n <= 1:
-        return n
-    
-    return fibonacci_naive(n - 1) + fibonacci_naive(n - 2)
+```csharp
+// Naive recursive fibonacci - exponential time complexity
+public static long FibonacciNaive(int n)
+{
+    if (n <= 1)
+        return n;
 
-# This is inefficient for large n due to repeated calculations
-print(fibonacci_naive(10))  # 55, but slow for n > 30
+    return FibonacciNaive(n - 1) + FibonacciNaive(n - 2);
+}
+
+// This is inefficient for large n due to repeated calculations
+Console.WriteLine(FibonacciNaive(10)); // 55, but slow for n > 30
 ```
 
 ### Optimized Fibonacci with Memoization
-```python
-def fibonacci_memo(n, memo={}):
-    """Optimized fibonacci using memoization"""
-    if n in memo:
-        return memo[n]
-    
-    if n <= 1:
-        return n
-    
-    memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo)
-    return memo[n]
-
-# Much faster for large n
-print(fibonacci_memo(50))  # 12586269025
-```
-
 ```csharp
 public static class Fibonacci
 {
     private static Dictionary<int, long> memo = new Dictionary<int, long>();
-    
+
     public static long FibonacciMemo(int n)
     {
         if (memo.ContainsKey(n))
             return memo[n];
-        
+
         if (n <= 1)
             return n;
-        
+
         memo[n] = FibonacciMemo(n - 1) + FibonacciMemo(n - 2);
         return memo[n];
     }
-    
+
     // Alternative with explicit memo parameter
     public static long FibonacciMemoExplicit(int n, Dictionary<int, long> memo = null)
     {
         if (memo == null)
             memo = new Dictionary<int, long>();
-            
+
         if (memo.ContainsKey(n))
             return memo[n];
-        
+
         if (n <= 1)
             return n;
-        
+
         memo[n] = FibonacciMemoExplicit(n - 1, memo) + FibonacciMemoExplicit(n - 2, memo);
         return memo[n];
     }
 }
 
-// Usage
+// Much faster for large n
 Console.WriteLine(Fibonacci.FibonacciMemo(50)); // 12586269025
 ```
 
@@ -142,61 +114,13 @@ Console.WriteLine(Fibonacci.FibonacciMemo(50)); // 12586269025
 ## Tree Recursion
 
 ### Tree Traversal
-```python
-class TreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
-
-def inorder_traversal(node):
-    """In-order: left -> root -> right"""
-    if node is None:
-        return []
-    
-    result = []
-    result.extend(inorder_traversal(node.left))   # Left subtree
-    result.append(node.value)                     # Root
-    result.extend(inorder_traversal(node.right))  # Right subtree
-    
-    return result
-
-def tree_height(node):
-    """Calculate height of tree"""
-    if node is None:
-        return 0
-    
-    left_height = tree_height(node.left)
-    right_height = tree_height(node.right)
-    
-    return 1 + max(left_height, right_height)
-
-def tree_sum(node):
-    """Sum all values in tree"""
-    if node is None:
-        return 0
-    
-    return node.value + tree_sum(node.left) + tree_sum(node.right)
-
-# Example usage
-root = TreeNode(1)
-root.left = TreeNode(2)
-root.right = TreeNode(3)
-root.left.left = TreeNode(4)
-root.left.right = TreeNode(5)
-
-print(inorder_traversal(root))  # [4, 2, 5, 1, 3]
-print(tree_height(root))        # 3
-print(tree_sum(root))          # 15
-```
-
 ```csharp
 public class TreeNode<T>
 {
     public T Value { get; set; }
     public TreeNode<T> Left { get; set; }
     public TreeNode<T> Right { get; set; }
-    
+
     public TreeNode(T value)
     {
         Value = value;
@@ -207,35 +131,38 @@ public class TreeNode<T>
 
 public static class TreeRecursion
 {
+    // In-order: left -> root -> right
     public static List<T> InorderTraversal<T>(TreeNode<T> node)
     {
         if (node == null)
             return new List<T>();
-        
+
         var result = new List<T>();
         result.AddRange(InorderTraversal(node.Left));  // Left subtree
         result.Add(node.Value);                        // Root
         result.AddRange(InorderTraversal(node.Right)); // Right subtree
-        
+
         return result;
     }
-    
+
+    // Calculate height of tree
     public static int TreeHeight<T>(TreeNode<T> node)
     {
         if (node == null)
             return 0;
-        
+
         int leftHeight = TreeHeight(node.Left);
         int rightHeight = TreeHeight(node.Right);
-        
+
         return 1 + Math.Max(leftHeight, rightHeight);
     }
-    
+
+    // Sum all values in tree
     public static int TreeSum(TreeNode<int> node)
     {
         if (node == null)
             return 0;
-        
+
         return node.Value + TreeSum(node.Left) + TreeSum(node.Right);
     }
 }
@@ -258,92 +185,91 @@ Console.WriteLine($"Sum: {TreeRecursion.TreeSum(root)}");       // 15
 ## Backtracking with Recursion
 
 ### N-Queens Problem
-```python
-def solve_n_queens(n):
-    """Solve N-Queens problem using backtracking"""
-    def is_safe(board, row, col):
-        # Check column
-        for i in range(row):
-            if board[i] == col:
-                return False
-        
-        # Check diagonals
-        for i in range(row):
-            if abs(board[i] - col) == abs(i - row):
-                return False
-        
-        return True
-    
-    def backtrack(board, row):
-        if row == n:
-            return [board[:]]  # Found solution, return copy
-        
-        solutions = []
-        for col in range(n):
-            if is_safe(board, row, col):
-                board[row] = col                    # Place queen
-                solutions.extend(backtrack(board, row + 1))  # Recurse
-                # No need to remove queen - we overwrite board[row] in next iteration
-        
-        return solutions
-    
-    board = [-1] * n  # board[i] = column position of queen in row i
-    return backtrack(board, 0)
+```csharp
+public static class NQueens
+{
+    public static List<List<int>> SolveNQueens(int n)
+    {
+        bool IsSafe(int[] board, int row, int col)
+        {
+            // Check column
+            for (int i = 0; i < row; i++)
+            {
+                if (board[i] == col)
+                    return false;
+            }
 
-# Example usage
-solutions = solve_n_queens(4)
-print(f"Found {len(solutions)} solutions for 4-Queens")
-for i, solution in enumerate(solutions):
-    print(f"Solution {i + 1}: {solution}")
+            // Check diagonals
+            for (int i = 0; i < row; i++)
+            {
+                if (Math.Abs(board[i] - col) == Math.Abs(i - row))
+                    return false;
+            }
+
+            return true;
+        }
+
+        List<List<int>> Backtrack(int[] board, int row)
+        {
+            if (row == n)
+            {
+                return new List<List<int>> { new List<int>(board) }; // Found solution
+            }
+
+            var solutions = new List<List<int>>();
+            for (int col = 0; col < n; col++)
+            {
+                if (IsSafe(board, row, col))
+                {
+                    board[row] = col;                     // Place queen
+                    solutions.AddRange(Backtrack(board, row + 1)); // Recurse
+                    // No need to remove queen - we overwrite board[row] in next iteration
+                }
+            }
+
+            return solutions;
+        }
+
+        var board = new int[n]; // board[i] = column position of queen in row i
+        for (int i = 0; i < n; i++)
+            board[i] = -1;
+
+        return Backtrack(board, 0);
+    }
+}
+
+// Example usage
+var solutions = NQueens.SolveNQueens(4);
+Console.WriteLine($"Found {solutions.Count} solutions for 4-Queens");
+for (int i = 0; i < solutions.Count; i++)
+{
+    Console.WriteLine($"Solution {i + 1}: [{string.Join(", ", solutions[i])}]");
+}
 ```
 
 ### Generate All Subsets
-```python
-def generate_subsets(nums):
-    """Generate all possible subsets using recursion"""
-    def backtrack(start, current_subset):
-        # Add current subset to results
-        result.append(current_subset[:])  # Make a copy
-        
-        # Try adding each remaining element
-        for i in range(start, len(nums)):
-            current_subset.append(nums[i])      # Choose
-            backtrack(i + 1, current_subset)   # Explore
-            current_subset.pop()               # Unchoose (backtrack)
-    
-    result = []
-    backtrack(0, [])
-    return result
-
-# Example usage
-subsets = generate_subsets([1, 2, 3])
-print("All subsets:")
-for subset in subsets:
-    print(subset)
-# Output: [], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]
-```
-
 ```csharp
 public static class Backtracking
 {
+    // Generate all possible subsets using recursion
     public static List<List<int>> GenerateSubsets(int[] nums)
     {
         var result = new List<List<int>>();
-        
+
         void Backtrack(int start, List<int> currentSubset)
         {
             // Add current subset to results
-            result.Add(new List<int>(currentSubset));
-            
+            result.Add(new List<int>(currentSubset)); // Make a copy
+
             // Try adding each remaining element
             for (int i = start; i < nums.Length; i++)
             {
                 currentSubset.Add(nums[i]);         // Choose
                 Backtrack(i + 1, currentSubset);   // Explore
-                currentSubset.RemoveAt(currentSubset.Count - 1); // Unchoose
+                currentSubset.RemoveAt(currentSubset.Count - 1); // Unchoose (backtrack)
             }
         }
-        
+
         Backtrack(0, new List<int>());
         return result;
     }
@@ -357,6 +283,7 @@ foreach (var subset in subsets)
 {
     Console.WriteLine($"[{string.Join(", ", subset)}]");
 }
+// Output: [], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]
 ```
 
 ---
@@ -364,71 +291,104 @@ foreach (var subset in subsets)
 ## Divide and Conquer
 
 ### Merge Sort (Recursive)
-```python
-def merge_sort(arr):
-    """Recursive merge sort implementation"""
-    # Base case
-    if len(arr) <= 1:
-        return arr
-    
-    # Divide
-    mid = len(arr) // 2
-    left = merge_sort(arr[:mid])
-    right = merge_sort(arr[mid:])
-    
-    # Conquer (merge)
-    return merge(left, right)
+```csharp
+public static class MergeSort
+{
+    // Recursive merge sort implementation
+    public static int[] MergeSortArray(int[] arr)
+    {
+        // Base case
+        if (arr.Length <= 1)
+            return arr;
 
-def merge(left, right):
-    """Merge two sorted arrays"""
-    result = []
-    i = j = 0
-    
-    while i < len(left) and j < len(right):
-        if left[i] <= right[j]:
-            result.append(left[i])
-            i += 1
-        else:
-            result.append(right[j])
-            j += 1
-    
-    # Add remaining elements
-    result.extend(left[i:])
-    result.extend(right[j:])
-    
-    return result
+        // Divide
+        int mid = arr.Length / 2;
+        int[] left = new int[mid];
+        int[] right = new int[arr.Length - mid];
 
-# Example usage
-arr = [64, 34, 25, 12, 22, 11, 90]
-sorted_arr = merge_sort(arr)
-print(f"Original: {arr}")
-print(f"Sorted: {sorted_arr}")
+        Array.Copy(arr, 0, left, 0, mid);
+        Array.Copy(arr, mid, right, 0, arr.Length - mid);
+
+        left = MergeSortArray(left);
+        right = MergeSortArray(right);
+
+        // Conquer (merge)
+        return Merge(left, right);
+    }
+
+    // Merge two sorted arrays
+    private static int[] Merge(int[] left, int[] right)
+    {
+        var result = new List<int>();
+        int i = 0, j = 0;
+
+        while (i < left.Length && j < right.Length)
+        {
+            if (left[i] <= right[j])
+            {
+                result.Add(left[i]);
+                i++;
+            }
+            else
+            {
+                result.Add(right[j]);
+                j++;
+            }
+        }
+
+        // Add remaining elements
+        while (i < left.Length)
+        {
+            result.Add(left[i]);
+            i++;
+        }
+
+        while (j < right.Length)
+        {
+            result.Add(right[j]);
+            j++;
+        }
+
+        return result.ToArray();
+    }
+}
+
+// Example usage
+int[] arr = {64, 34, 25, 12, 22, 11, 90};
+int[] sortedArr = MergeSort.MergeSortArray(arr);
+Console.WriteLine($"Original: [{string.Join(", ", arr)}]");
+Console.WriteLine($"Sorted: [{string.Join(", ", sortedArr)}]");
 ```
 
 ### Binary Search (Recursive)
-```python
-def binary_search_recursive(arr, target, left=0, right=None):
-    """Recursive binary search"""
-    if right is None:
-        right = len(arr) - 1
-    
-    # Base case: not found
-    if left > right:
-        return -1
-    
-    mid = (left + right) // 2
-    
-    if arr[mid] == target:
-        return mid
-    elif arr[mid] > target:
-        return binary_search_recursive(arr, target, left, mid - 1)
-    else:
-        return binary_search_recursive(arr, target, mid + 1, right)
+```csharp
+public static class BinarySearch
+{
+    // Recursive binary search
+    public static int BinarySearchRecursive(int[] arr, int target, int left = 0, int right = -1)
+    {
+        if (right == -1)
+            right = arr.Length - 1;
 
-# Example usage
-sorted_arr = [1, 3, 5, 7, 9, 11, 13, 15]
-index = binary_search_recursive(sorted_arr, 7)
-print(f"Found 7 at index: {index}")  # Found 7 at index: 3
+        // Base case: not found
+        if (left > right)
+            return -1;
+
+        int mid = (left + right) / 2;
+
+        if (arr[mid] == target)
+            return mid;
+        else if (arr[mid] > target)
+            return BinarySearchRecursive(arr, target, left, mid - 1);
+        else
+            return BinarySearchRecursive(arr, target, mid + 1, right);
+    }
+}
+
+// Example usage
+int[] sortedArr = {1, 3, 5, 7, 9, 11, 13, 15};
+int index = BinarySearch.BinarySearchRecursive(sortedArr, 7);
+Console.WriteLine($"Found 7 at index: {index}"); // Found 7 at index: 3
 ```
 
 ---
@@ -452,55 +412,69 @@ print(f"Found 7 at index: {index}")  # Found 7 at index: 3
 ### Converting Recursion to Iteration
 
 #### Tail Recursion → Loop
-```python
-# Tail recursive (easy to convert)
-def factorial_tail_recursive(n, acc=1):
-    if n <= 1:
-        return acc
-    return factorial_tail_recursive(n - 1, n * acc)
+```csharp
+// Tail recursive (easy to convert)
+public static int FactorialTailRecursive(int n, int acc = 1)
+{
+    if (n <= 1)
+        return acc;
+    return FactorialTailRecursive(n - 1, n * acc);
+}
 
-# Iterative equivalent
-def factorial_iterative(n):
-    acc = 1
-    while n > 1:
-        acc *= n
-        n -= 1
-    return acc
+// Iterative equivalent
+public static int FactorialIterative(int n)
+{
+    int acc = 1;
+    while (n > 1)
+    {
+        acc *= n;
+        n--;
+    }
+    return acc;
+}
 ```
 
 #### General Recursion → Stack
-```python
-# Recursive tree traversal
-def inorder_recursive(node):
-    if node is None:
-        return []
-    
-    result = []
-    result.extend(inorder_recursive(node.left))
-    result.append(node.value)
-    result.extend(inorder_recursive(node.right))
-    return result
+```csharp
+// Recursive tree traversal
+public static List<T> InorderRecursive<T>(TreeNode<T> node)
+{
+    if (node == null)
+        return new List<T>();
 
-# Iterative using explicit stack
-def inorder_iterative(root):
-    stack = []
-    result = []
-    current = root
-    
-    while stack or current:
-        # Go to leftmost node
-        while current:
-            stack.append(current)
-            current = current.left
-        
-        # Process current node
-        current = stack.pop()
-        result.append(current.value)
-        
-        # Move to right subtree
-        current = current.right
-    
-    return result
+    var result = new List<T>();
+    result.AddRange(InorderRecursive(node.Left));
+    result.Add(node.Value);
+    result.AddRange(InorderRecursive(node.Right));
+    return result;
+}
+
+// Iterative using explicit stack
+public static List<T> InorderIterative<T>(TreeNode<T> root)
+{
+    var stack = new Stack<TreeNode<T>>();
+    var result = new List<T>();
+    var current = root;
+
+    while (stack.Count > 0 || current != null)
+    {
+        // Go to leftmost node
+        while (current != null)
+        {
+            stack.Push(current);
+            current = current.Left;
+        }
+
+        // Process current node
+        current = stack.Pop();
+        result.Add(current.Value);
+
+        // Move to right subtree
+        current = current.Right;
+    }
+
+    return result;
+}
 ```
 
 ---
@@ -509,43 +483,53 @@ def inorder_iterative(root):
 
 ### 1. Linear Recursion
 Each function calls itself at most once.
-```python
-def sum_array(arr, index=0):
-    if index >= len(arr):
-        return 0
-    return arr[index] + sum_array(arr, index + 1)
+```csharp
+public static int SumArray(int[] arr, int index = 0)
+{
+    if (index >= arr.Length)
+        return 0;
+    return arr[index] + SumArray(arr, index + 1);
+}
 ```
 
-### 2. Tree Recursion  
+### 2. Tree Recursion
 Function calls itself multiple times.
-```python
-def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)  # Two recursive calls
+```csharp
+public static int Fibonacci(int n)
+{
+    if (n <= 1)
+        return n;
+    return Fibonacci(n - 1) + Fibonacci(n - 2); // Two recursive calls
+}
 ```
 
 ### 3. Tail Recursion
 Recursive call is the last operation.
-```python
-def gcd(a, b):
-    if b == 0:
-        return a
-    return gcd(b, a % b)  # Last operation is recursive call
+```csharp
+public static int GCD(int a, int b)
+{
+    if (b == 0)
+        return a;
+    return GCD(b, a % b); // Last operation is recursive call
+}
 ```
 
 ### 4. Mutual Recursion
 Functions call each other.
-```python
-def is_even(n):
-    if n == 0:
-        return True
-    return is_odd(n - 1)
+```csharp
+public static bool IsEven(int n)
+{
+    if (n == 0)
+        return true;
+    return IsOdd(n - 1);
+}
 
-def is_odd(n):
-    if n == 0:
-        return False
-    return is_even(n - 1)
+public static bool IsOdd(int n)
+{
+    if (n == 0)
+        return false;
+    return IsEven(n - 1);
+}
 ```
 
 ---
@@ -553,54 +537,75 @@ def is_odd(n):
 ## Recursion Debugging Tips
 
 ### 1. Print Trace
-```python
-def factorial_debug(n, depth=0):
-    indent = "  " * depth
-    print(f"{indent}factorial({n})")
-    
-    if n <= 1:
-        print(f"{indent}-> returning 1")
-        return 1
-    
-    result = n * factorial_debug(n - 1, depth + 1)
-    print(f"{indent}-> returning {result}")
-    return result
+```csharp
+public static int FactorialDebug(int n, int depth = 0)
+{
+    string indent = new string(' ', depth * 2);
+    Console.WriteLine($"{indent}factorial({n})");
 
-factorial_debug(4)
+    if (n <= 1)
+    {
+        Console.WriteLine($"{indent}-> returning 1");
+        return 1;
+    }
+
+    int result = n * FactorialDebug(n - 1, depth + 1);
+    Console.WriteLine($"{indent}-> returning {result}");
+    return result;
+}
+
+FactorialDebug(4);
 ```
 
 ### 2. Visualize Call Stack
-```python
-def fibonacci_trace(n, call_stack=[]):
-    call_stack.append(f"fib({n})")
-    print(" -> ".join(call_stack))
-    
-    if n <= 1:
-        result = n
-    else:
-        left = fibonacci_trace(n - 1, call_stack[:])
-        right = fibonacci_trace(n - 2, call_stack[:])
-        result = left + right
-    
-    call_stack.pop()
-    return result
+```csharp
+public static int FibonacciTrace(int n, List<string> callStack = null)
+{
+    if (callStack == null)
+        callStack = new List<string>();
+
+    callStack.Add($"fib({n})");
+    Console.WriteLine(string.Join(" -> ", callStack));
+
+    int result;
+    if (n <= 1)
+    {
+        result = n;
+    }
+    else
+    {
+        int left = FibonacciTrace(n - 1, new List<string>(callStack));
+        int right = FibonacciTrace(n - 2, new List<string>(callStack));
+        result = left + right;
+    }
+
+    callStack.RemoveAt(callStack.Count - 1);
+    return result;
+}
 ```
 
 ### 3. Count Function Calls
-```python
-def fibonacci_with_counter(n, counter={'calls': 0}):
-    counter['calls'] += 1
-    
-    if n <= 1:
-        return n
-    
-    return (fibonacci_with_counter(n - 1, counter) + 
-            fibonacci_with_counter(n - 2, counter))
+```csharp
+public class CallCounter
+{
+    public int Calls { get; set; } = 0;
+}
 
-# Usage
-counter = {'calls': 0}
-result = fibonacci_with_counter(10, counter)
-print(f"Result: {result}, Function calls: {counter['calls']}")
+public static int FibonacciWithCounter(int n, CallCounter counter)
+{
+    counter.Calls++;
+
+    if (n <= 1)
+        return n;
+
+    return FibonacciWithCounter(n - 1, counter) +
+           FibonacciWithCounter(n - 2, counter);
+}
+
+// Usage
+var counter = new CallCounter();
+int result = FibonacciWithCounter(10, counter);
+Console.WriteLine($"Result: {result}, Function calls: {counter.Calls}");
 ```
 
 ---
@@ -608,60 +613,66 @@ print(f"Result: {result}, Function calls: {counter['calls']}")
 ## Interview Problems
 
 ### 1. Power Calculation
-```python
-def power(base, exp):
-    """Calculate base^exp using recursion"""
-    if exp == 0:
-        return 1
-    if exp == 1:
-        return base
-    
-    # Optimize by using exp//2
-    half_power = power(base, exp // 2)
-    if exp % 2 == 0:
-        return half_power * half_power
-    else:
-        return base * half_power * half_power
+```csharp
+// Calculate base^exp using recursion
+public static long Power(int baseNum, int exp)
+{
+    if (exp == 0)
+        return 1;
+    if (exp == 1)
+        return baseNum;
 
-print(power(2, 10))  # 1024
+    // Optimize by using exp/2
+    long halfPower = Power(baseNum, exp / 2);
+    if (exp % 2 == 0)
+        return halfPower * halfPower;
+    else
+        return baseNum * halfPower * halfPower;
+}
+
+Console.WriteLine(Power(2, 10)); // 1024
 ```
 
 ### 2. Reverse String
-```python
-def reverse_string(s):
-    """Reverse string using recursion"""
-    if len(s) <= 1:
-        return s
-    
-    return reverse_string(s[1:]) + s[0]
+```csharp
+// Reverse string using recursion
+public static string ReverseString(string s)
+{
+    if (s.Length <= 1)
+        return s;
 
-print(reverse_string("hello"))  # "olleh"
+    return ReverseString(s.Substring(1)) + s[0];
+}
+
+Console.WriteLine(ReverseString("hello")); // "olleh"
 ```
 
 ### 3. Palindrome Check
-```python
-def is_palindrome(s, left=0, right=None):
-    """Check if string is palindrome using recursion"""
-    if right is None:
-        right = len(s) - 1
-    
-    if left >= right:
-        return True
-    
-    if s[left] != s[right]:
-        return False
-    
-    return is_palindrome(s, left + 1, right - 1)
+```csharp
+// Check if string is palindrome using recursion
+public static bool IsPalindrome(string s, int left = 0, int right = -1)
+{
+    if (right == -1)
+        right = s.Length - 1;
 
-print(is_palindrome("racecar"))  # True
-print(is_palindrome("hello"))    # False
+    if (left >= right)
+        return true;
+
+    if (s[left] != s[right])
+        return false;
+
+    return IsPalindrome(s, left + 1, right - 1);
+}
+
+Console.WriteLine(IsPalindrome("racecar")); // True
+Console.WriteLine(IsPalindrome("hello"));   // False
 ```
 
 ## Performance Considerations
 
 **Space Complexity:** O(d) where d is maximum recursion depth
 **Stack Overflow:** Deep recursion can exhaust call stack
-**Optimization:** Tail call optimization (not available in Python, limited in C#)
+**Optimization:** Tail call optimization (limited in C#)
 
 **Best Practices:**
 1. Always define clear base cases

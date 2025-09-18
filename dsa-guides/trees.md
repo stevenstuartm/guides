@@ -23,71 +23,6 @@ Hierarchical relationships are everywhere - file systems, decision making, organ
 **Modern reality:** Most databases use B-trees internally. You'll implement binary trees in interviews but rarely build custom tree structures in production.
 
 ### Basic Tree Implementation
-
-#### Python Implementation
-```python
-class TreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.children = []
-    
-    def add_child(self, child_node):
-        """Add a child node to this node"""
-        print(f"Adding {child_node.value} as child of {self.value}")
-        self.children.append(child_node)
-    
-    def remove_child(self, child_node):
-        """Remove a child node from this node"""
-        print(f"Removing {child_node.value} from {self.value}")
-        self.children = [child for child in self.children if child is not child_node]
-    
-    def traverse_depth_first(self):
-        """Depth-first traversal using recursion"""
-        print(self.value)
-        for child in self.children:
-            child.traverse_depth_first()
-    
-    def traverse_breadth_first(self):
-        """Breadth-first traversal using queue"""
-        queue = [self]
-        while queue:
-            current_node = queue.pop(0)
-            print(current_node.value)
-            queue.extend(current_node.children)
-    
-    def find_node(self, target_value):
-        """Find a node with specific value using DFS"""
-        if self.value == target_value:
-            return self
-        
-        for child in self.children:
-            result = child.find_node(target_value)
-            if result:
-                return result
-        
-        return None
-
-# Example usage
-root = TreeNode("CEO")
-vp_engineering = TreeNode("VP Engineering")
-vp_marketing = TreeNode("VP Marketing")
-
-root.add_child(vp_engineering)
-root.add_child(vp_marketing)
-
-engineer1 = TreeNode("Senior Engineer")
-engineer2 = TreeNode("Junior Engineer")
-vp_engineering.add_child(engineer1)
-vp_engineering.add_child(engineer2)
-
-print("Depth-first traversal:")
-root.traverse_depth_first()
-
-print("\nBreadth-first traversal:")
-root.traverse_breadth_first()
-```
-
-#### C# Implementation
 ```csharp
 public class TreeNode<T>
 {
@@ -207,134 +142,6 @@ root.TraverseBreadthFirst();
 2. Right subtree contains only nodes with values greater than parent
 3. Both left and right subtrees are also BSTs
 4. No duplicate values (typically)
-
-### Python Implementation
-```python
-class BinarySearchTree:
-    def __init__(self, value, depth=1):
-        self.value = value
-        self.depth = depth
-        self.left = None
-        self.right = None
-    
-    def insert(self, value):
-        """Insert a new value into the BST"""
-        if value < self.value:
-            if self.left is None:
-                self.left = BinarySearchTree(value, self.depth + 1)
-                print(f"Inserted {value} to the left of {self.value} at depth {self.depth + 1}")
-            else:
-                self.left.insert(value)
-        elif value > self.value:  # No duplicates allowed
-            if self.right is None:
-                self.right = BinarySearchTree(value, self.depth + 1)
-                print(f"Inserted {value} to the right of {self.value} at depth {self.depth + 1}")
-            else:
-                self.right.insert(value)
-        else:
-            print(f"Value {value} already exists in the tree")
-    
-    def search(self, value):
-        """Search for a value in the BST"""
-        if self.value == value:
-            return self
-        elif value < self.value and self.left is not None:
-            return self.left.search(value)
-        elif value > self.value and self.right is not None:
-            return self.right.search(value)
-        else:
-            return None
-    
-    def inorder_traversal(self):
-        """In-order traversal: left -> root -> right (gives sorted order)"""
-        result = []
-        if self.left is not None:
-            result.extend(self.left.inorder_traversal())
-        result.append(self.value)
-        if self.right is not None:
-            result.extend(self.right.inorder_traversal())
-        return result
-    
-    def preorder_traversal(self):
-        """Pre-order traversal: root -> left -> right"""
-        result = [self.value]
-        if self.left is not None:
-            result.extend(self.left.preorder_traversal())
-        if self.right is not None:
-            result.extend(self.right.preorder_traversal())
-        return result
-    
-    def postorder_traversal(self):
-        """Post-order traversal: left -> right -> root"""
-        result = []
-        if self.left is not None:
-            result.extend(self.left.postorder_traversal())
-        if self.right is not None:
-            result.extend(self.right.postorder_traversal())
-        result.append(self.value)
-        return result
-    
-    def find_min(self):
-        """Find minimum value (leftmost node)"""
-        if self.left is None:
-            return self.value
-        return self.left.find_min()
-    
-    def find_max(self):
-        """Find maximum value (rightmost node)"""
-        if self.right is None:
-            return self.value
-        return self.right.find_max()
-    
-    def delete(self, value):
-        """Delete a node with given value"""
-        if value < self.value:
-            if self.left is not None:
-                self.left = self.left.delete(value)
-        elif value > self.value:
-            if self.right is not None:
-                self.right = self.right.delete(value)
-        else:  # Found the node to delete
-            # Case 1: No children (leaf node)
-            if self.left is None and self.right is None:
-                return None
-            
-            # Case 2: One child
-            if self.left is None:
-                return self.right
-            if self.right is None:
-                return self.left
-            
-            # Case 3: Two children
-            # Replace with inorder successor (smallest value in right subtree)
-            min_right = self.right.find_min()
-            self.value = min_right
-            self.right = self.right.delete(min_right)
-        
-        return self
-
-# Example usage
-print("Creating BST with root value 15:")
-bst = BinarySearchTree(15)
-
-# Insert values
-values = [10, 20, 8, 12, 25, 6, 11, 13, 27]
-for value in values:
-    bst.insert(value)
-
-print(f"\nIn-order traversal (sorted): {bst.inorder_traversal()}")
-print(f"Pre-order traversal: {bst.preorder_traversal()}")
-print(f"Post-order traversal: {bst.postorder_traversal()}")
-
-print(f"\nMin value: {bst.find_min()}")
-print(f"Max value: {bst.find_max()}")
-
-# Search for values
-search_values = [12, 99, 25]
-for value in search_values:
-    result = bst.search(value)
-    print(f"Search for {value}: {'Found' if result else 'Not found'}")
-```
 
 ### C# Implementation
 ```csharp
@@ -551,48 +358,6 @@ foreach (var value in searchValues)
 - **Implementation:** Uses queue for traversal
 
 ### Level-Order Traversal Implementation
-
-#### Python
-```python
-from collections import deque
-
-def level_order_traversal(root):
-    """Level-order traversal using queue"""
-    if not root:
-        return []
-    
-    result = []
-    queue = deque([root])
-    
-    while queue:
-        level_size = len(queue)
-        current_level = []
-        
-        for _ in range(level_size):
-            node = queue.popleft()
-            current_level.append(node.value)
-            
-            if node.left:
-                queue.append(node.left)
-            if node.right:
-                queue.append(node.right)
-        
-        result.append(current_level)
-    
-    return result
-
-# Example with BST
-bst = BinarySearchTree(15)
-for val in [10, 20, 8, 12, 25, 6]:
-    bst.insert(val)
-
-levels = level_order_traversal(bst)
-print("Level-order traversal:")
-for i, level in enumerate(levels):
-    print(f"Level {i}: {level}")
-```
-
-#### C#
 ```csharp
 public static List<List<T>> LevelOrderTraversal<T>(BinarySearchTree<T> root) where T : IComparable<T>
 {
@@ -624,57 +389,106 @@ public static List<List<T>> LevelOrderTraversal<T>(BinarySearchTree<T> root) whe
     
     return result;
 }
+
+// Example with BST
+var bst = new BinarySearchTree<int>(15);
+int[] values = {10, 20, 8, 12, 25, 6};
+foreach (var val in values)
+{
+    bst.Insert(val);
+}
+
+var levels = LevelOrderTraversal(bst);
+Console.WriteLine("Level-order traversal:");
+for (int i = 0; i < levels.Count; i++)
+{
+    Console.WriteLine($"Level {i}: [{string.Join(", ", levels[i])}]");
+}
 ```
 
 ## Common Interview Problems
 
 ### 1. Validate Binary Search Tree
-```python
-def is_valid_bst(node, min_val=float('-inf'), max_val=float('inf')):
-    """Check if tree maintains BST property"""
-    if not node:
-        return True
-    
-    if node.value <= min_val or node.value >= max_val:
-        return False
-    
-    return (is_valid_bst(node.left, min_val, node.value) and
-            is_valid_bst(node.right, node.value, max_val))
+```csharp
+public static bool IsValidBST<T>(BinarySearchTree<T> node, T minVal = default(T), T maxVal = default(T))
+    where T : IComparable<T>
+{
+    if (node == null)
+        return true;
+
+    // Handle default values for min/max
+    bool hasMinConstraint = !EqualityComparer<T>.Default.Equals(minVal, default(T));
+    bool hasMaxConstraint = !EqualityComparer<T>.Default.Equals(maxVal, default(T));
+
+    if (hasMinConstraint && node.Value.CompareTo(minVal) <= 0)
+        return false;
+
+    if (hasMaxConstraint && node.Value.CompareTo(maxVal) >= 0)
+        return false;
+
+    return IsValidBST(node.Left, minVal, node.Value) &&
+           IsValidBST(node.Right, node.Value, maxVal);
+}
+
+// Alternative implementation using nullable for numeric types
+public static bool IsValidBST(BinarySearchTree<int> node, int? minVal = null, int? maxVal = null)
+{
+    if (node == null)
+        return true;
+
+    if (minVal.HasValue && node.Value <= minVal.Value)
+        return false;
+
+    if (maxVal.HasValue && node.Value >= maxVal.Value)
+        return false;
+
+    return IsValidBST(node.Left, minVal, node.Value) &&
+           IsValidBST(node.Right, node.Value, maxVal);
+}
 ```
 
 ### 2. Find Lowest Common Ancestor
-```python
-def find_lca(root, p, q):
-    """Find lowest common ancestor in BST"""
-    if not root:
-        return None
-    
-    # Both nodes are in left subtree
-    if p < root.value and q < root.value:
-        return find_lca(root.left, p, q)
-    
-    # Both nodes are in right subtree
-    if p > root.value and q > root.value:
-        return find_lca(root.right, p, q)
-    
-    # Nodes are on different sides (or one is root)
-    return root
+```csharp
+public static BinarySearchTree<T> FindLCA<T>(BinarySearchTree<T> root, T p, T q)
+    where T : IComparable<T>
+{
+    if (root == null)
+        return null;
+
+    // Both nodes are in left subtree
+    if (p.CompareTo(root.Value) < 0 && q.CompareTo(root.Value) < 0)
+        return FindLCA(root.Left, p, q);
+
+    // Both nodes are in right subtree
+    if (p.CompareTo(root.Value) > 0 && q.CompareTo(root.Value) > 0)
+        return FindLCA(root.Right, p, q);
+
+    // Nodes are on different sides (or one is root)
+    return root;
+}
 ```
 
 ### 3. Convert Sorted Array to BST
-```python
-def sorted_array_to_bst(nums):
-    """Convert sorted array to balanced BST"""
-    if not nums:
-        return None
-    
-    mid = len(nums) // 2
-    root = BinarySearchTree(nums[mid])
-    
-    root.left = sorted_array_to_bst(nums[:mid])
-    root.right = sorted_array_to_bst(nums[mid + 1:])
-    
-    return root
+```csharp
+public static BinarySearchTree<T> SortedArrayToBST<T>(T[] nums) where T : IComparable<T>
+{
+    return SortedArrayToBSTHelper(nums, 0, nums.Length - 1);
+}
+
+private static BinarySearchTree<T> SortedArrayToBSTHelper<T>(T[] nums, int start, int end)
+    where T : IComparable<T>
+{
+    if (start > end)
+        return null;
+
+    int mid = start + (end - start) / 2;
+    var root = new BinarySearchTree<T>(nums[mid]);
+
+    root.Left = SortedArrayToBSTHelper(nums, start, mid - 1);
+    root.Right = SortedArrayToBSTHelper(nums, mid + 1, end);
+
+    return root;
+}
 ```
 
 ## Balanced Tree Concepts
@@ -688,21 +502,266 @@ Unbalanced BSTs can degrade to O(n) operations. Balanced trees guarantee O(log n
 - **B-Trees:** Multi-way trees, used in databases
 
 ### When Tree Becomes Skewed
-```python
-# This creates a skewed tree (effectively a linked list)
-skewed_bst = BinarySearchTree(1)
-for i in range(2, 8):
-    skewed_bst.insert(i)  # Always goes right
+```csharp
+// This creates a skewed tree (effectively a linked list)
+var skewedBST = new BinarySearchTree<int>(1);
+for (int i = 2; i < 8; i++)
+{
+    skewedBST.Insert(i);  // Always goes right
+}
 
-# Height = n, operations become O(n)
-print(skewed_bst.inorder_traversal())  # [1, 2, 3, 4, 5, 6, 7]
+// Height = n, operations become O(n)
+var result = skewedBST.InorderTraversal();
+Console.WriteLine($"[{string.Join(", ", result)}]");  // [1, 2, 3, 4, 5, 6, 7]
 ```
+
+## Tries (Prefix Trees)
+
+### Why Tries Exist
+Efficiently store and search strings with shared prefixes. Tries provide fast prefix-based operations and are essential for autocomplete, spell checkers, and IP routing tables where prefix matching is crucial.
+
+### When to Use Tries
+
+**Use when:**
+- Need fast prefix-based searches
+- Implementing autocomplete or spell check
+- Storing dictionaries with prefix queries
+- IP routing or URL routing systems
+- Need to find all words with a given prefix
+
+**Don't use when:**
+- Only need exact string matching (use hash table)
+- Memory usage is critical (tries can be space-intensive)
+- Working with non-string data
+- Simple substring search is sufficient
+
+### Time Complexity
+- **Insert:** O(m) where m is key length
+- **Search:** O(m) where m is key length
+- **Delete:** O(m) where m is key length
+- **Prefix search:** O(p + k) where p is prefix length, k is number of results
+- **Space:** O(ALPHABET_SIZE × N × M) in worst case
+
+### Trie Implementation
+
+```csharp
+public class TrieNode
+{
+    public Dictionary<char, TrieNode> Children { get; set; }
+    public bool IsEndOfWord { get; set; }
+    public string Word { get; set; }  // Optional: store the actual word
+
+    public TrieNode()
+    {
+        Children = new Dictionary<char, TrieNode>();
+        IsEndOfWord = false;
+        Word = null;
+    }
+}
+
+public class Trie
+{
+    private TrieNode root;
+
+    public Trie()
+    {
+        root = new TrieNode();
+    }
+
+    public void Insert(string word)
+    {
+        TrieNode current = root;
+
+        foreach (char c in word)
+        {
+            if (!current.Children.ContainsKey(c))
+            {
+                current.Children[c] = new TrieNode();
+            }
+            current = current.Children[c];
+        }
+
+        current.IsEndOfWord = true;
+        current.Word = word;
+    }
+
+    public bool Search(string word)
+    {
+        TrieNode node = SearchNode(word);
+        return node != null && node.IsEndOfWord;
+    }
+
+    public bool StartsWith(string prefix)
+    {
+        return SearchNode(prefix) != null;
+    }
+
+    private TrieNode SearchNode(string prefix)
+    {
+        TrieNode current = root;
+
+        foreach (char c in prefix)
+        {
+            if (!current.Children.ContainsKey(c))
+            {
+                return null;
+            }
+            current = current.Children[c];
+        }
+
+        return current;
+    }
+
+    public List<string> GetWordsWithPrefix(string prefix)
+    {
+        var result = new List<string>();
+        TrieNode prefixNode = SearchNode(prefix);
+
+        if (prefixNode != null)
+        {
+            DfsCollectWords(prefixNode, result);
+        }
+
+        return result;
+    }
+
+    private void DfsCollectWords(TrieNode node, List<string> result)
+    {
+        if (node.IsEndOfWord)
+        {
+            result.Add(node.Word);
+        }
+
+        foreach (var child in node.Children.Values)
+        {
+            DfsCollectWords(child, result);
+        }
+    }
+
+    public bool Delete(string word)
+    {
+        return DeleteHelper(root, word, 0);
+    }
+
+    private bool DeleteHelper(TrieNode current, string word, int index)
+    {
+        if (index == word.Length)
+        {
+            // We've reached the end of the word
+            if (!current.IsEndOfWord)
+            {
+                return false; // Word doesn't exist
+            }
+
+            current.IsEndOfWord = false;
+            current.Word = null;
+
+            // If current has no children, it can be deleted
+            return current.Children.Count == 0;
+        }
+
+        char c = word[index];
+        if (!current.Children.ContainsKey(c))
+        {
+            return false; // Word doesn't exist
+        }
+
+        TrieNode node = current.Children[c];
+        bool shouldDeleteChild = DeleteHelper(node, word, index + 1);
+
+        if (shouldDeleteChild)
+        {
+            current.Children.Remove(c);
+            // Return true if current has no children and is not end of another word
+            return current.Children.Count == 0 && !current.IsEndOfWord;
+        }
+
+        return false;
+    }
+}
+
+// Example usage
+var trie = new Trie();
+
+// Insert words
+string[] words = {"cat", "cats", "dog", "doggy", "dogs", "dodge", "car", "card"};
+foreach (string word in words)
+{
+    trie.Insert(word);
+}
+
+// Search operations
+Console.WriteLine(trie.Search("cat"));      // True
+Console.WriteLine(trie.Search("car"));      // True
+Console.WriteLine(trie.Search("care"));     // False
+
+// Prefix operations
+Console.WriteLine(trie.StartsWith("do"));   // True
+Console.WriteLine(trie.StartsWith("bat"));  // False
+
+// Get all words with prefix
+var wordsWithDog = trie.GetWordsWithPrefix("dog");
+Console.WriteLine($"Words starting with 'dog': [{string.Join(", ", wordsWithDog)}]");
+// Output: [dog, doggy, dogs]
+```
+
+### Autocomplete Implementation
+
+```csharp
+public class AutoComplete
+{
+    private Trie trie;
+
+    public AutoComplete()
+    {
+        trie = new Trie();
+    }
+
+    public void AddWord(string word)
+    {
+        trie.Insert(word.ToLower());
+    }
+
+    public List<string> GetSuggestions(string prefix, int maxSuggestions = 10)
+    {
+        var suggestions = trie.GetWordsWithPrefix(prefix.ToLower());
+        return suggestions.Take(maxSuggestions).ToList();
+    }
+
+    // Example usage for building autocomplete
+    public static void DemonstrateAutocomplete()
+    {
+        var autocomplete = new AutoComplete();
+
+        // Add vocabulary
+        string[] dictionary = {
+            "apple", "application", "apply", "approach", "appropriate",
+            "banana", "band", "bandana", "bank", "banner",
+            "car", "card", "care", "career", "careful"
+        };
+
+        foreach (string word in dictionary)
+        {
+            autocomplete.AddWord(word);
+        }
+
+        // Get suggestions
+        Console.WriteLine("Autocomplete for 'app':");
+        var suggestions = autocomplete.GetSuggestions("app", 5);
+        foreach (string suggestion in suggestions)
+        {
+            Console.WriteLine($"  {suggestion}");
+        }
+        // Output: apple, application, apply, approach, appropriate
+    }
+}
+```
+
+---
 
 ## Modern Usage
 
-**Python:** Use `bisect` module for sorted list operations, or implement AVL/Red-Black for guaranteed performance
-
-**C#:** Use `SortedDictionary<K,V>` or `SortedSet<T>` (implemented as Red-Black trees)
+**C#:** Use `SortedDictionary<K,V>` or `SortedSet<T>` (implemented as Red-Black trees) for production code
 
 **Interview focus:** Understand BST properties, implement basic operations, know common problems like validation and traversals
 

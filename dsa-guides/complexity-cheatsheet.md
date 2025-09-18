@@ -1,5 +1,11 @@
 # Complexity Cheat Sheet
 
+## Why Complexity Analysis Matters
+
+Understanding algorithm efficiency isn't just academic—it's the difference between a system that scales gracefully and one that crashes under load. Complexity analysis helps you predict how your code will behave with real-world data sizes, choose the right approach for your constraints, and avoid the trap of premature optimization.
+
+**Real impact:** A O(n²) algorithm might work fine with 100 items but become unusably slow with 10,000. This cheat sheet gives you the tools to make informed decisions about algorithm choice and performance trade-offs.
+
 ## Quick Reference for Time & Space Complexity
 
 ---
@@ -39,7 +45,7 @@
 | **Counting Sort** | O(n + k) | O(n + k) | O(n + k) | O(k) | Yes | When k is small |
 | **Radix Sort** | O(d(n + k)) | O(d(n + k)) | O(d(n + k)) | O(n + k) | Yes | For integers |
 | **Bucket Sort** | O(n + k) | O(n + k) | O(n²) | O(n) | Yes | Uniform distribution |
-| **Tim Sort** | O(n) | O(n log n) | O(n log n) | O(n) | Yes | Python/Java default |
+| **Tim Sort** | O(n) | O(n log n) | O(n log n) | O(n) | Yes | Hybrid stable sort |
 
 ---
 
@@ -194,35 +200,55 @@ O(n!)   ~3.6M       !        !        !
 
 ## Language-Specific Complexity Notes
 
-### Python
-```python
-# These operations have hidden complexity:
-list.append()           # O(1) amortized
-list.insert(0, x)      # O(n) - shifts all elements
-list.pop()             # O(1) from end
-list.pop(0)            # O(n) from beginning
-''.join(list)          # O(n) total characters
-str += str             # O(n) each time - use join() instead
-list.sort()            # O(n log n) - Timsort
-sorted()               # O(n log n) - creates new list
-in operator            # O(n) for lists, O(1) for sets/dicts
-list.count()           # O(n) - scans entire list
-list.index()           # O(n) - scans until found
-```
-
 ### C#
 ```csharp
-// Array and List<T> operations:
-array[i]               // O(1)
-list.Add()             // O(1) amortized  
-list.Insert(0, x)      // O(n) - shifts elements
-list.Remove()          // O(n) - finds then removes
-list.RemoveAt()        // O(n) - shifts elements
-list.Contains()        // O(n) - linear search
-list.Sort()            // O(n log n) - Introsort
-string.Concat()        // O(n) total length
-StringBuilder.Append() // O(1) amortized
-LINQ operations        // Often O(n) but can be higher
+// Array operations:
+array[i]                    // O(1) - direct indexing
+Array.Sort(array)           // O(n log n) - Introsort algorithm
+Array.BinarySearch(array)   // O(log n) - requires sorted array
+Array.IndexOf(array, item)  // O(n) - linear search
+Array.Reverse(array)        // O(n) - reverses in place
+
+// List<T> operations:
+list.Add(item)              // O(1) amortized - may trigger resize
+list.Insert(0, item)        // O(n) - shifts all elements right
+list.Remove(item)           // O(n) - finds item then removes
+list.RemoveAt(index)        // O(n) - shifts elements left
+list.Contains(item)         // O(n) - linear search through list
+list.IndexOf(item)          // O(n) - linear search for first occurrence
+list.Sort()                 // O(n log n) - Introsort (hybrid algorithm)
+list[index]                 // O(1) - direct indexing
+
+// String operations:
+string.Concat(strings)      // O(n) - n is total character count
+string + string            // O(n) - creates new string each time
+StringBuilder.Append()     // O(1) amortized - efficient for multiple concatenations
+string.Substring()         // O(n) - creates new string
+string.Contains()          // O(n) - linear search
+string.IndexOf()           // O(n) - linear search for substring
+
+// Dictionary<K,V> operations:
+dict[key]                   // O(1) average, O(n) worst case
+dict.ContainsKey(key)       // O(1) average, O(n) worst case
+dict.Add(key, value)        // O(1) average, O(n) worst case
+dict.Remove(key)            // O(1) average, O(n) worst case
+dict.Keys/Values            // O(1) - returns collection views
+
+// HashSet<T> operations:
+set.Add(item)               // O(1) average, O(n) worst case
+set.Contains(item)          // O(1) average, O(n) worst case
+set.Remove(item)            // O(1) average, O(n) worst case
+set.UnionWith(other)        // O(n) - n is size of other collection
+set.IntersectWith(other)    // O(n) - n is size of smaller set
+
+// LINQ operations (common ones):
+collection.Where(predicate)     // O(n) - filters collection
+collection.Select(selector)     // O(n) - transforms each element
+collection.OrderBy(keySelector) // O(n log n) - sorts collection
+collection.First(predicate)     // O(n) worst case - stops at first match
+collection.Any(predicate)       // O(n) worst case - stops at first match
+collection.Count(predicate)     // O(n) - counts matching elements
+collection.GroupBy(keySelector) // O(n) - groups elements
 ```
 
 ---
@@ -267,14 +293,18 @@ Need shortest path?
 
 ### Myth: "O(1) is always faster than O(n)"
 **Reality:** Big O describes growth rate, not absolute speed
-```python
-# This O(1) operation might be slower than O(n) for small n
-def slow_constant_operation():
-    time.sleep(1)  # O(1) but takes 1 second
-    return 42
+```csharp
+// This O(1) operation might be slower than O(n) for small n
+public static int SlowConstantOperation()
+{
+    Thread.Sleep(1000); // O(1) but takes 1 second
+    return 42;
+}
 
-def fast_linear_operation(n):
-    return sum(range(n))  # O(n) but very fast for small n
+public static int FastLinearOperation(int n)
+{
+    return Enumerable.Range(0, n).Sum(); // O(n) but very fast for small n
+}
 ```
 
 ### Myth: "O(n log n) is much slower than O(n)"
@@ -349,36 +379,66 @@ def fast_linear_operation(n):
 - **Sorting inside loops:** Often can be done once outside
 
 ### Code Smells
-```python
-# Red flag: O(n²) when O(n) is possible
-for i in range(n):
-    for j in range(n):  # Same range as outer loop
-        if arr[i] == arr[j]:  # Can use hash set instead
-            return True
+```csharp
+// Red flag: O(n²) when O(n) is possible
+public static bool HasDuplicatesBad(int[] arr)
+{
+    int n = arr.Length;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++) // Same range as outer loop
+        {
+            if (i != j && arr[i] == arr[j]) // Can use HashSet instead
+                return true;
+        }
+    }
+    return false;
+}
 
-# Better: O(n)
-seen = set()
-for item in arr:
-    if item in seen:
-        return True
-    seen.add(item)
+// Better: O(n)
+public static bool HasDuplicatesGood(int[] arr)
+{
+    var seen = new HashSet<int>();
+    foreach (int item in arr)
+    {
+        if (seen.Contains(item))
+            return true;
+        seen.Add(item);
+    }
+    return false;
+}
 ```
 
 ### Good Signs
-```python
-# Good: Two pointers technique O(n)
-left, right = 0, len(arr) - 1
-while left < right:
-    # Process arr[left] and arr[right]
-    left += 1
-    right -= 1
+```csharp
+// Good: Two pointers technique O(n)
+public static void TwoPointersExample(int[] arr)
+{
+    int left = 0;
+    int right = arr.Length - 1;
 
-# Good: Sliding window O(n)
-window_sum = sum(arr[:k])
-max_sum = window_sum
-for i in range(k, len(arr)):
-    window_sum = window_sum - arr[i-k] + arr[i]
-    max_sum = max(max_sum, window_sum)
+    while (left < right)
+    {
+        // Process arr[left] and arr[right]
+        left++;
+        right--;
+    }
+}
+
+// Good: Sliding window O(n)
+public static int MaxSumSubarray(int[] arr, int k)
+{
+    int windowSum = arr.Take(k).Sum();
+    int maxSum = windowSum;
+
+    for (int i = k; i < arr.Length; i++)
+    {
+        windowSum = windowSum - arr[i - k] + arr[i];
+        maxSum = Math.Max(maxSum, windowSum);
+    }
+
+    return maxSum;
+}
 ```
 
 ---

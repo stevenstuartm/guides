@@ -43,8 +43,6 @@ Sorted data enables binary search (O(log n) vs O(n)) and makes many operations f
 ### How It Works
 Repeatedly steps through the list, compares adjacent elements and swaps them if they're in wrong order. "Bubbles" largest elements to the end.
 
-### Python Implementation
-
 ### C# Implementation
 ```csharp
 public static class BubbleSort
@@ -111,7 +109,7 @@ Console.WriteLine($"Sorted: [{string.Join(", ", sortedNumbers)}]");
 - In-place sorting required
 - Small datasets (overhead not worth it)
 
-**Modern reality:** Often the algorithm behind language built-ins. Use `sorted()` or `Array.Sort()` instead of implementing.
+**Modern reality:** Often the algorithm behind language built-ins. Use `Array.Sort()` and `List<T>.Sort()` instead of implementing.
 
 ### Time Complexity
 - **All cases:** O(n log n)
@@ -119,8 +117,6 @@ Console.WriteLine($"Sorted: [{string.Join(", ", sortedNumbers)}]");
 
 ### How It Works
 Divide-and-conquer: recursively divide array into halves until single elements, then merge back together in sorted order.
-
-### Python Implementation
 
 ### C# Implementation
 ```csharp
@@ -227,8 +223,6 @@ Console.WriteLine($"Final sorted: [{string.Join(", ", orderedList)}]");
 2. Partition array: elements < pivot go left, > pivot go right
 3. Recursively sort left and right subarrays
 
-### Python Implementation
-
 ### C# Implementation
 ```csharp
 public static class QuickSort
@@ -318,8 +312,6 @@ Console.WriteLine($"After sorting: [{string.Join(", ", testList)}]");
 2. Repeatedly extract the maximum (root) and place at end
 3. Restore heap property and repeat
 
-### Python Implementation
-
 ### C# Implementation
 ```csharp
 public static class HeapSort
@@ -398,8 +390,6 @@ Console.WriteLine($"Sorted: [{string.Join(", ", testList)}]");
 ### Stability Comparison
 
 ## Modern Built-in Sorting
-
-### Python - Timsort
 
 ### C# - Introsort
 ```csharp

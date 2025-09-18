@@ -19,7 +19,7 @@ Efficiently maintain the minimum or maximum element while allowing dynamic inser
 - Simple min/max of static data (just iterate once)
 - Need to access elements by index (use array)
 
-**Modern reality:** Use built-in priority queues like Python's `heapq`, C#'s `PriorityQueue<T,P>`. Implement heaps in interviews to show understanding.
+**Modern reality:** Use C#'s built-in `PriorityQueue<T,P>` (.NET 6+) or `SortedSet<T>` for older versions. Implement heaps in interviews to show understanding.
 
 ---
 
@@ -37,8 +37,8 @@ Efficiently maintain the minimum or maximum element while allowing dynamic inser
 
 ### Array Representation
 For element at index `i`:
-- **Parent:** `(i - 1) // 2`
-- **Left child:** `2 * i + 1` 
+- **Parent:** `(i - 1) / 2`
+- **Left child:** `2 * i + 1`
 - **Right child:** `2 * i + 2`
 
 ```
@@ -66,119 +66,6 @@ Tree:       1
 ---
 
 ## Min-Heap Implementation
-
-### Python Implementation
-```python
-class MinHeap:
-    def __init__(self):
-        self.heap = []
-    
-    def parent(self, i):
-        return (i - 1) // 2
-    
-    def left_child(self, i):
-        return 2 * i + 1
-    
-    def right_child(self, i):
-        return 2 * i + 2
-    
-    def swap(self, i, j):
-        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
-    
-    def insert(self, value):
-        """Insert new element and maintain heap property"""
-        self.heap.append(value)
-        self._bubble_up(len(self.heap) - 1)
-        print(f"Inserted {value}: {self.heap}")
-    
-    def _bubble_up(self, index):
-        """Move element up until heap property is satisfied"""
-        while index > 0:
-            parent_index = self.parent(index)
-            
-            # If heap property is satisfied, stop
-            if self.heap[parent_index] <= self.heap[index]:
-                break
-            
-            print(f"Bubbling up: swap {self.heap[index]} with parent {self.heap[parent_index]}")
-            self.swap(index, parent_index)
-            index = parent_index
-    
-    def extract_min(self):
-        """Remove and return minimum element"""
-        if not self.heap:
-            return None
-        
-        if len(self.heap) == 1:
-            return self.heap.pop()
-        
-        # Save min value
-        min_val = self.heap[0]
-        
-        # Move last element to root
-        self.heap[0] = self.heap.pop()
-        print(f"After moving last to root: {self.heap}")
-        
-        # Restore heap property
-        self._bubble_down(0)
-        
-        print(f"Extracted {min_val}, heap is now: {self.heap}")
-        return min_val
-    
-    def _bubble_down(self, index):
-        """Move element down until heap property is satisfied"""
-        while True:
-            min_index = index
-            left = self.left_child(index)
-            right = self.right_child(index)
-            
-            # Find smallest among node and its children
-            if left < len(self.heap) and self.heap[left] < self.heap[min_index]:
-                min_index = left
-            
-            if right < len(self.heap) and self.heap[right] < self.heap[min_index]:
-                min_index = right
-            
-            # If no swap needed, heap property is satisfied
-            if min_index == index:
-                break
-            
-            print(f"Bubbling down: swap {self.heap[index]} with {self.heap[min_index]}")
-            self.swap(index, min_index)
-            index = min_index
-    
-    def peek(self):
-        """Return minimum element without removing it"""
-        return self.heap[0] if self.heap else None
-    
-    def size(self):
-        return len(self.heap)
-    
-    def is_empty(self):
-        return len(self.heap) == 0
-    
-    def __str__(self):
-        return f"MinHeap({self.heap})"
-
-# Example usage
-print("=== Min Heap Demo ===")
-heap = MinHeap()
-
-# Insert elements
-values = [10, 5, 20, 3, 8, 15]
-for val in values:
-    heap.insert(val)
-
-print(f"\nFinal heap: {heap}")
-print(f"Minimum element: {heap.peek()}")
-
-# Extract elements
-print("\nExtracting elements in sorted order:")
-while not heap.is_empty():
-    print(f"Extracted: {heap.extract_min()}")
-```
-
-### C# Implementation
 ```csharp
 public class MinHeap<T> where T : IComparable<T>
 {
@@ -315,43 +202,52 @@ while (!heap.IsEmpty)
 ## Building Heap from Array (O(n) Algorithm)
 
 ### Bottom-Up Heapify
-```python
-def build_min_heap(arr):
-    """Build min heap from array in O(n) time"""
-    heap = arr[:]  # Make copy
-    n = len(heap)
-    
-    # Start from last non-leaf node and heapify down
-    for i in range((n - 2) // 2, -1, -1):
-        _heapify_down(heap, i, n)
-        print(f"After heapifying index {i}: {heap}")
-    
-    return heap
+```csharp
+public static int[] BuildMinHeap(int[] arr)
+{
+    // Build min heap from array in O(n) time
+    int[] heap = new int[arr.Length];
+    Array.Copy(arr, heap, arr.Length);
+    int n = heap.Length;
 
-def _heapify_down(heap, index, heap_size):
-    """Helper function for heapify down"""
-    while True:
-        min_index = index
-        left = 2 * index + 1
-        right = 2 * index + 2
-        
-        if left < heap_size and heap[left] < heap[min_index]:
-            min_index = left
-        
-        if right < heap_size and heap[right] < heap[min_index]:
-            min_index = right
-        
-        if min_index == index:
-            break
-        
-        heap[index], heap[min_index] = heap[min_index], heap[index]
-        index = min_index
+    // Start from last non-leaf node and heapify down
+    for (int i = (n - 2) / 2; i >= 0; i--)
+    {
+        HeapifyDown(heap, i, n);
+        Console.WriteLine($"After heapifying index {i}: [{string.Join(", ", heap)}]");
+    }
 
-# Example usage
-array = [20, 15, 8, 10, 5, 7, 6, 2, 9, 1]
-print(f"Original array: {array}")
-heap = build_min_heap(array)
-print(f"Min heap: {heap}")
+    return heap;
+}
+
+private static void HeapifyDown(int[] heap, int index, int heapSize)
+{
+    // Helper function for heapify down
+    while (true)
+    {
+        int minIndex = index;
+        int left = 2 * index + 1;
+        int right = 2 * index + 2;
+
+        if (left < heapSize && heap[left] < heap[minIndex])
+            minIndex = left;
+
+        if (right < heapSize && heap[right] < heap[minIndex])
+            minIndex = right;
+
+        if (minIndex == index)
+            break;
+
+        (heap[index], heap[minIndex]) = (heap[minIndex], heap[index]);
+        index = minIndex;
+    }
+}
+
+// Example usage
+int[] array = {20, 15, 8, 10, 5, 7, 6, 2, 9, 1};
+Console.WriteLine($"Original array: [{string.Join(", ", array)}]");
+int[] heap = BuildMinHeap(array);
+Console.WriteLine($"Min heap: [{string.Join(", ", heap)}]");
 ```
 
 ### Why O(n) and not O(n log n)?
@@ -363,64 +259,6 @@ print(f"Min heap: {heap}")
 ---
 
 ## Priority Queue Implementation
-
-### Priority Queue with Custom Comparison
-```python
-import heapq
-from dataclasses import dataclass
-from typing import Any
-
-@dataclass
-class PriorityItem:
-    priority: int
-    item: Any
-    
-    def __lt__(self, other):
-        return self.priority < other.priority
-
-class PriorityQueue:
-    def __init__(self):
-        self._queue = []
-        self._index = 0  # For tie-breaking
-    
-    def push(self, item, priority):
-        """Add item with given priority"""
-        heapq.heappush(self._queue, (priority, self._index, item))
-        self._index += 1
-        print(f"Added {item} with priority {priority}")
-    
-    def pop(self):
-        """Remove and return highest priority item"""
-        if self._queue:
-            priority, _, item = heapq.heappop(self._queue)
-            print(f"Removed {item} with priority {priority}")
-            return item
-        raise IndexError("Priority queue is empty")
-    
-    def peek(self):
-        """Return highest priority item without removing"""
-        if self._queue:
-            return self._queue[0][2]
-        return None
-    
-    def is_empty(self):
-        return len(self._queue) == 0
-    
-    def size(self):
-        return len(self._queue)
-
-# Example: Task scheduling
-pq = PriorityQueue()
-pq.push("Low priority task", 3)
-pq.push("High priority task", 1)
-pq.push("Medium priority task", 2)
-pq.push("Another high priority", 1)
-
-print("\nProcessing tasks by priority:")
-while not pq.is_empty():
-    task = pq.pop()
-    print(f"Processing: {task}")
-```
 
 ### C# Priority Queue (.NET 6+)
 ```csharp
@@ -522,114 +360,169 @@ public class CustomPriorityQueue<T> where T : IComparable<T>
 ## Heap Applications
 
 ### 1. Top-K Elements
-```python
-import heapq
+```csharp
+public static List<int> FindKLargest(int[] nums, int k)
+{
+    // Find k largest elements using min-heap
+    if (k >= nums.Length)
+        return nums.OrderByDescending(x => x).ToList();
 
-def find_k_largest(nums, k):
-    """Find k largest elements using min-heap"""
-    if k >= len(nums):
-        return sorted(nums, reverse=True)
-    
-    # Use min-heap of size k
-    heap = []
-    
-    for num in nums:
-        if len(heap) < k:
-            heapq.heappush(heap, num)
-        elif num > heap[0]:
-            heapq.heappushpop(heap, num)  # Push and pop in one operation
-    
-    return sorted(heap, reverse=True)
+    // Use min-heap of size k
+    var heap = new MinHeap<int>();
 
-def find_k_smallest(nums, k):
-    """Find k smallest elements using max-heap"""
-    # Python heapq is min-heap, so negate values for max-heap
-    heap = []
-    
-    for num in nums:
-        if len(heap) < k:
-            heapq.heappush(heap, -num)  # Negate for max-heap behavior
-        elif num < -heap[0]:  # num < max element in heap
-            heapq.heappushpop(heap, -num)
-    
-    return sorted([-x for x in heap])
+    foreach (int num in nums)
+    {
+        if (heap.Count < k)
+        {
+            heap.Insert(num);
+        }
+        else if (num > heap.Peek())
+        {
+            heap.ExtractMin();
+            heap.Insert(num);
+        }
+    }
 
-# Example usage
-numbers = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
-print(f"Original: {numbers}")
-print(f"3 largest: {find_k_largest(numbers, 3)}")
-print(f"3 smallest: {find_k_smallest(numbers, 3)}")
+    var result = new List<int>();
+    while (!heap.IsEmpty)
+    {
+        result.Add(heap.ExtractMin());
+    }
+
+    result.Reverse();
+    return result;
+}
+
+public static List<int> FindKSmallest(int[] nums, int k)
+{
+    // Find k smallest elements using max-heap (negate values)
+    var heap = new MinHeap<int>();
+
+    foreach (int num in nums)
+    {
+        if (heap.Count < k)
+        {
+            heap.Insert(-num);  // Negate for max-heap behavior
+        }
+        else if (num < -heap.Peek())  // num < max element in heap
+        {
+            heap.ExtractMin();
+            heap.Insert(-num);
+        }
+    }
+
+    var result = new List<int>();
+    while (!heap.IsEmpty)
+    {
+        result.Add(-heap.ExtractMin());
+    }
+
+    result.Sort();
+    return result;
+}
+
+// Example usage
+int[] numbers = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5};
+Console.WriteLine($"Original: [{string.Join(", ", numbers)}]");
+Console.WriteLine($"3 largest: [{string.Join(", ", FindKLargest(numbers, 3))}]");
+Console.WriteLine($"3 smallest: [{string.Join(", ", FindKSmallest(numbers, 3))}]");
 ```
 
 ### 2. Merge K Sorted Arrays
-```python
-import heapq
+```csharp
+public static List<int> MergeKSortedArrays(List<List<int>> arrays)
+{
+    // Merge k sorted arrays using heap
+    var heap = new PriorityQueue<(int value, int arrayIndex, int elementIndex), int>();
+    var result = new List<int>();
 
-def merge_k_sorted_arrays(arrays):
-    """Merge k sorted arrays using heap"""
-    heap = []
-    result = []
-    
-    # Add first element from each array to heap
-    for i, arr in enumerate(arrays):
-        if arr:  # Skip empty arrays
-            heapq.heappush(heap, (arr[0], i, 0))  # (value, array_index, element_index)
-    
-    while heap:
-        value, arr_idx, elem_idx = heapq.heappop(heap)
-        result.append(value)
-        
-        # Add next element from the same array
-        if elem_idx + 1 < len(arrays[arr_idx]):
-            next_value = arrays[arr_idx][elem_idx + 1]
-            heapq.heappush(heap, (next_value, arr_idx, elem_idx + 1))
-    
-    return result
+    // Add first element from each array to heap
+    for (int i = 0; i < arrays.Count; i++)
+    {
+        if (arrays[i].Count > 0)  // Skip empty arrays
+        {
+            heap.Enqueue((arrays[i][0], i, 0), arrays[i][0]);
+        }
+    }
 
-# Example usage
-arrays = [
-    [1, 4, 5],
-    [1, 3, 4],
-    [2, 6]
-]
-merged = merge_k_sorted_arrays(arrays)
-print(f"Merged: {merged}")  # [1, 1, 2, 3, 4, 4, 5, 6]
+    while (heap.Count > 0)
+    {
+        var (value, arrIdx, elemIdx) = heap.Dequeue();
+        result.Add(value);
+
+        // Add next element from the same array
+        if (elemIdx + 1 < arrays[arrIdx].Count)
+        {
+            int nextValue = arrays[arrIdx][elemIdx + 1];
+            heap.Enqueue((nextValue, arrIdx, elemIdx + 1), nextValue);
+        }
+    }
+
+    return result;
+}
+
+// Example usage
+var arrays = new List<List<int>>
+{
+    new List<int> {1, 4, 5},
+    new List<int> {1, 3, 4},
+    new List<int> {2, 6}
+};
+var merged = MergeKSortedArrays(arrays);
+Console.WriteLine($"Merged: [{string.Join(", ", merged)}]");  // [1, 1, 2, 3, 4, 4, 5, 6]
 ```
 
 ### 3. Running Median
-```python
-import heapq
+```csharp
+public class MedianFinder
+{
+    // Find median from data stream using two heaps
+    private PriorityQueue<int, int> maxHeap;  // Left half (negate priorities for max-heap)
+    private PriorityQueue<int, int> minHeap;  // Right half
 
-class MedianFinder:
-    """Find median from data stream using two heaps"""
-    def __init__(self):
-        self.max_heap = []  # Left half (negated for max-heap)
-        self.min_heap = []  # Right half
-    
-    def add_number(self, num):
-        # Add to max_heap first
-        heapq.heappush(self.max_heap, -num)
-        
-        # Move largest from max_heap to min_heap
-        heapq.heappush(self.min_heap, -heapq.heappop(self.max_heap))
-        
-        # Balance heaps (max_heap can have at most one more element)
-        if len(self.min_heap) > len(self.max_heap):
-            heapq.heappush(self.max_heap, -heapq.heappop(self.min_heap))
-    
-    def find_median(self):
-        if len(self.max_heap) > len(self.min_heap):
-            return -self.max_heap[0]
-        else:
-            return (-self.max_heap[0] + self.min_heap[0]) / 2
+    public MedianFinder()
+    {
+        maxHeap = new PriorityQueue<int, int>(Comparer<int>.Create((a, b) => b.CompareTo(a)));
+        minHeap = new PriorityQueue<int, int>();
+    }
 
-# Example usage
-median_finder = MedianFinder()
-numbers = [1, 2, 3, 4, 5]
+    public void AddNumber(int num)
+    {
+        // Add to max_heap first
+        maxHeap.Enqueue(num, num);
 
-for num in numbers:
-    median_finder.add_number(num)
-    print(f"Added {num}, median: {median_finder.find_median()}")
+        // Move largest from max_heap to min_heap
+        minHeap.Enqueue(maxHeap.Peek(), maxHeap.Dequeue());
+
+        // Balance heaps (max_heap can have at most one more element)
+        if (minHeap.Count > maxHeap.Count)
+        {
+            maxHeap.Enqueue(minHeap.Peek(), minHeap.Dequeue());
+        }
+    }
+
+    public double FindMedian()
+    {
+        if (maxHeap.Count > minHeap.Count)
+        {
+            return maxHeap.Peek();
+        }
+        else
+        {
+            return (maxHeap.Peek() + minHeap.Peek()) / 2.0;
+        }
+    }
+}
+
+// Example usage
+var medianFinder = new MedianFinder();
+int[] numbers = {1, 2, 3, 4, 5};
+
+foreach (int num in numbers)
+{
+    medianFinder.AddNumber(num);
+    Console.WriteLine($"Added {num}, median: {medianFinder.FindMedian()}");
+}
 ```
 
 ---
@@ -637,119 +530,147 @@ for num in numbers:
 ## Interview Problems
 
 ### 1. Kth Largest Element
-```python
-import heapq
+```csharp
+public static int FindKthLargest(int[] nums, int k)
+{
+    // Find kth largest element using heap
+    // Method 1: Use min-heap of size k
+    var heap = new MinHeap<int>();
 
-def find_kth_largest(nums, k):
-    """Find kth largest element using heap"""
-    # Method 1: Use min-heap of size k
-    heap = []
-    for num in nums:
-        if len(heap) < k:
-            heapq.heappush(heap, num)
-        elif num > heap[0]:
-            heapq.heappushpop(heap, num)
-    
-    return heap[0]
+    foreach (int num in nums)
+    {
+        if (heap.Count < k)
+        {
+            heap.Insert(num);
+        }
+        else if (num > heap.Peek())
+        {
+            heap.ExtractMin();
+            heap.Insert(num);
+        }
+    }
 
-def find_kth_largest_quickselect(nums, k):
-    """Alternative: Quick select algorithm"""
-    def partition(left, right, pivot_index):
-        pivot_value = nums[pivot_index]
-        nums[pivot_index], nums[right] = nums[right], nums[pivot_index]
-        
-        store_index = left
-        for i in range(left, right):
-            if nums[i] > pivot_value:
-                nums[store_index], nums[i] = nums[i], nums[store_index]
-                store_index += 1
-        
-        nums[right], nums[store_index] = nums[store_index], nums[right]
-        return store_index
-    
-    def select(left, right, k_smallest):
-        if left == right:
-            return nums[left]
-        
-        pivot_index = left + (right - left) // 2
-        pivot_index = partition(left, right, pivot_index)
-        
-        if k_smallest == pivot_index:
-            return nums[k_smallest]
-        elif k_smallest < pivot_index:
-            return select(left, pivot_index - 1, k_smallest)
-        else:
-            return select(pivot_index + 1, right, k_smallest)
-    
-    return select(0, len(nums) - 1, k - 1)
+    return heap.Peek();
+}
 
-# Example usage
-nums = [3, 2, 1, 5, 6, 4]
-k = 2
-print(f"Array: {nums}")
-print(f"{k}th largest (heap): {find_kth_largest(nums, k)}")
-print(f"{k}th largest (quickselect): {find_kth_largest_quickselect(nums[:], k)}")
+public static int FindKthLargestQuickSelect(int[] nums, int k)
+{
+    // Alternative: Quick select algorithm
+    int Partition(int left, int right, int pivotIndex)
+    {
+        int pivotValue = nums[pivotIndex];
+        (nums[pivotIndex], nums[right]) = (nums[right], nums[pivotIndex]);
+
+        int storeIndex = left;
+        for (int i = left; i < right; i++)
+        {
+            if (nums[i] > pivotValue)
+            {
+                (nums[storeIndex], nums[i]) = (nums[i], nums[storeIndex]);
+                storeIndex++;
+            }
+        }
+
+        (nums[right], nums[storeIndex]) = (nums[storeIndex], nums[right]);
+        return storeIndex;
+    }
+
+    int Select(int left, int right, int kSmallest)
+    {
+        if (left == right)
+            return nums[left];
+
+        int pivotIndex = left + (right - left) / 2;
+        pivotIndex = Partition(left, right, pivotIndex);
+
+        if (kSmallest == pivotIndex)
+            return nums[kSmallest];
+        else if (kSmallest < pivotIndex)
+            return Select(left, pivotIndex - 1, kSmallest);
+        else
+            return Select(pivotIndex + 1, right, kSmallest);
+    }
+
+    return Select(0, nums.Length - 1, k - 1);
+}
+
+// Example usage
+int[] nums = {3, 2, 1, 5, 6, 4};
+int k = 2;
+Console.WriteLine($"Array: [{string.Join(", ", nums)}]");
+Console.WriteLine($"{k}th largest (heap): {FindKthLargest(nums, k)}");
+Console.WriteLine($"{k}th largest (quickselect): {FindKthLargestQuickSelect((int[])nums.Clone(), k)}");
 ```
 
 ### 2. Task Scheduler
-```python
-import heapq
-from collections import Counter, deque
+```csharp
+public static int LeastInterval(char[] tasks, int n)
+{
+    // Minimum intervals to execute all tasks with cooldown n
+    if (n == 0)
+        return tasks.Length;
 
-def least_interval(tasks, n):
-    """Minimum intervals to execute all tasks with cooldown n"""
-    if n == 0:
-        return len(tasks)
-    
-    # Count frequency of each task
-    task_counts = Counter(tasks)
-    
-    # Max heap of frequencies (negate for max-heap)
-    heap = [-count for count in task_counts.values()]
-    heapq.heapify(heap)
-    
-    # Queue to store (count, available_time)
-    queue = deque()
-    time = 0
-    
-    while heap or queue:
-        time += 1
-        
-        # Add back available tasks from queue
-        if queue and queue[0][1] == time:
-            heapq.heappush(heap, queue.popleft()[0])
-        
-        # Execute most frequent available task
-        if heap:
-            count = heapq.heappop(heap)
-            count += 1  # Reduce frequency (was negative)
-            
-            if count < 0:  # Still has remaining executions
-                queue.append((count, time + n + 1))
-    
-    return time
+    // Count frequency of each task
+    var taskCounts = new Dictionary<char, int>();
+    foreach (char task in tasks)
+    {
+        taskCounts[task] = taskCounts.GetValueOrDefault(task, 0) + 1;
+    }
 
-# Example usage
-tasks = ['A', 'A', 'A', 'B', 'B', 'B']
-n = 2
-result = least_interval(tasks, n)
-print(f"Tasks: {tasks}, cooldown: {n}")
-print(f"Minimum intervals: {result}")
+    // Max heap of frequencies (negate for max-heap behavior)
+    var heap = new PriorityQueue<int, int>(Comparer<int>.Create((a, b) => b.CompareTo(a)));
+    foreach (int count in taskCounts.Values)
+    {
+        heap.Enqueue(count, count);
+    }
+
+    // Queue to store (count, available_time)
+    var queue = new Queue<(int count, int availableTime)>();
+    int time = 0;
+
+    while (heap.Count > 0 || queue.Count > 0)
+    {
+        time++;
+
+        // Add back available tasks from queue
+        if (queue.Count > 0 && queue.Peek().availableTime == time)
+        {
+            var (count, _) = queue.Dequeue();
+            heap.Enqueue(count, count);
+        }
+
+        // Execute most frequent available task
+        if (heap.Count > 0)
+        {
+            int count = heap.Dequeue();
+            count--;  // Reduce frequency
+
+            if (count > 0)  // Still has remaining executions
+            {
+                queue.Enqueue((count, time + n + 1));
+            }
+        }
+    }
+
+    return time;
+}
+
+// Example usage
+char[] tasks = {'A', 'A', 'A', 'B', 'B', 'B'};
+int n = 2;
+int result = LeastInterval(tasks, n);
+Console.WriteLine($"Tasks: [{string.Join(", ", tasks)}], cooldown: {n}");
+Console.WriteLine($"Minimum intervals: {result}");
 ```
 
 ---
 
 ## Modern Usage
 
-**Python:** 
-- Use `heapq` module for basic heap operations
-- `queue.PriorityQueue` for thread-safe priority queue
-- Build your own for custom comparisons
-
 **C#:**
 - Use `PriorityQueue<TElement, TPriority>` (.NET 6+)
 - `SortedSet<T>` for ordered operations
-- Custom implementation for older versions
+- Custom implementation for older versions or specific requirements
 
 **Key Takeaways:**
 - Heaps are perfect for "find extremes repeatedly" problems

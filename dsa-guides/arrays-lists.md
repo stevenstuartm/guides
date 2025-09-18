@@ -17,7 +17,7 @@ Direct memory access enables O(1) lookups by index. Arrays store elements in con
 - Unknown maximum size with strict memory constraints
 - Need complex relationships between elements (use graphs)
 
-**Modern reality:** Your default choice for most problems. Use `list` in Python, `List<T>` in C#. These are dynamic arrays optimized by language developers.
+**Modern reality:** Your default choice for most problems. Use `List<T>` in C#. These are dynamic arrays optimized by language developers.
 
 ---
 
@@ -54,49 +54,6 @@ Direct memory access enables O(1) lookups by index. Arrays store elements in con
 
 ## Static Arrays
 
-### Python Implementation
-Python doesn't have built-in static arrays, but we can simulate them:
-
-```python
-class StaticArray:
-    def __init__(self, size):
-        self.size = size
-        self.data = [None] * size
-    
-    def get(self, index):
-        """Get element at index"""
-        if 0 <= index < self.size:
-            return self.data[index]
-        raise IndexError("Index out of bounds")
-    
-    def set(self, index, value):
-        """Set element at index"""
-        if 0 <= index < self.size:
-            self.data[index] = value
-        else:
-            raise IndexError("Index out of bounds")
-    
-    def length(self):
-        """Get array length"""
-        return self.size
-    
-    def __str__(self):
-        return f"StaticArray({self.data})"
-
-# Example usage
-arr = StaticArray(5)
-arr.set(0, "first")
-arr.set(1, "second")
-arr.set(4, "last")
-
-print(arr)  # StaticArray(['first', 'second', None, None, 'last'])
-print(arr.get(1))  # "second"
-
-# Using Python's array module for numeric arrays
-import array
-numeric_array = array.array('i', [1, 2, 3, 4, 5])  # 'i' = signed integers
-print(numeric_array)  # array('i', [1, 2, 3, 4, 5])
-```
 
 ### C# Implementation
 ```csharp
@@ -176,116 +133,6 @@ public class StaticArray<T>
 
 ## Dynamic Arrays
 
-### Python Implementation
-Python's `list` is a dynamic array, but let's implement our own to understand the concepts:
-
-```python
-class DynamicArray:
-    def __init__(self, initial_capacity=4):
-        self.capacity = initial_capacity
-        self.size = 0
-        self.data = [None] * self.capacity
-    
-    def __len__(self):
-        return self.size
-    
-    def __getitem__(self, index):
-        """Get element at index"""
-        if 0 <= index < self.size:
-            return self.data[index]
-        raise IndexError("Index out of bounds")
-    
-    def __setitem__(self, index, value):
-        """Set element at index"""
-        if 0 <= index < self.size:
-            self.data[index] = value
-        else:
-            raise IndexError("Index out of bounds")
-    
-    def append(self, value):
-        """Add element to end of array"""
-        if self.size >= self.capacity:
-            self._resize()
-        
-        self.data[self.size] = value
-        self.size += 1
-    
-    def insert(self, index, value):
-        """Insert element at specific index"""
-        if index < 0 or index > self.size:
-            raise IndexError("Index out of bounds")
-        
-        if self.size >= self.capacity:
-            self._resize()
-        
-        # Shift elements to the right
-        for i in range(self.size, index, -1):
-            self.data[i] = self.data[i - 1]
-        
-        self.data[index] = value
-        self.size += 1
-    
-    def remove_at(self, index):
-        """Remove element at specific index"""
-        if index < 0 or index >= self.size:
-            raise IndexError("Index out of bounds")
-        
-        removed_value = self.data[index]
-        
-        # Shift elements to the left
-        for i in range(index, self.size - 1):
-            self.data[i] = self.data[i + 1]
-        
-        self.size -= 1
-        self.data[self.size] = None  # Clear reference
-        
-        return removed_value
-    
-    def remove(self, value):
-        """Remove first occurrence of value"""
-        for i in range(self.size):
-            if self.data[i] == value:
-                return self.remove_at(i)
-        raise ValueError(f"Value {value} not found")
-    
-    def _resize(self):
-        """Double the capacity when needed"""
-        old_capacity = self.capacity
-        self.capacity *= 2
-        new_data = [None] * self.capacity
-        
-        # Copy existing data
-        for i in range(self.size):
-            new_data[i] = self.data[i]
-        
-        self.data = new_data
-        print(f"Resized from {old_capacity} to {self.capacity}")
-    
-    def __str__(self):
-        elements = [str(self.data[i]) for i in range(self.size)]
-        return f"DynamicArray([{', '.join(elements)}])"
-
-# Example usage
-arr = DynamicArray()
-print(f"Initial: {arr}, capacity: {arr.capacity}")
-
-# Add elements
-for i in range(10):
-    arr.append(f"item_{i}")
-    if i in [3, 7]:  # Show resize points
-        print(f"After adding {i+1} items: {arr}")
-
-print(f"Final: {arr}")
-
-# Insert and remove
-arr.insert(0, "first")
-arr.insert(5, "middle")
-print(f"After insertions: {arr}")
-
-arr.remove("item_3")
-arr.remove_at(0)
-print(f"After removals: {arr}")
-```
 
 ### C# Implementation
 ```csharp
@@ -464,125 +311,137 @@ Operations to get to 32 elements:
 ## Common Array Operations
 
 ### Searching
-```python
-def linear_search(arr, target):
-    """Find first occurrence of target"""
-    for i in range(len(arr)):
-        if arr[i] == target:
-            return i
-    return -1
+```csharp
+public static class ArraySearching
+{
+    public static int LinearSearch<T>(T[] arr, T target) where T : IEquatable<T>
+    {
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (arr[i].Equals(target))
+                return i;
+        }
+        return -1;
+    }
 
-def find_all_occurrences(arr, target):
-    """Find all indices where target appears"""
-    indices = []
-    for i in range(len(arr)):
-        if arr[i] == target:
-            indices.append(i)
-    return indices
+    public static List<int> FindAllOccurrences<T>(T[] arr, T target) where T : IEquatable<T>
+    {
+        var indices = new List<int>();
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (arr[i].Equals(target))
+                indices.Add(i);
+        }
+        return indices;
+    }
 
-# Using built-in methods
-arr = [1, 3, 7, 3, 9, 3]
-print(arr.index(3))        # 1 (first occurrence)
-print(arr.count(3))        # 3 (total occurrences)
-print(3 in arr)           # True (membership test)
+    // Example usage
+    public static void DemonstrateSearching()
+    {
+        int[] arr = {1, 3, 7, 3, 9, 3};
+
+        Console.WriteLine(LinearSearch(arr, 3));           // 1 (first occurrence)
+        Console.WriteLine(FindAllOccurrences(arr, 3).Count); // 3 (total occurrences)
+        Console.WriteLine(Array.IndexOf(arr, 3));          // 1 (built-in method)
+        Console.WriteLine(arr.Contains(3));                // True (membership test)
+    }
+}
 ```
 
 ### Two Pointers Technique
-```python
-def reverse_array(arr):
-    """Reverse array in-place using two pointers"""
-    left, right = 0, len(arr) - 1
-    
-    while left < right:
-        arr[left], arr[right] = arr[right], arr[left]
-        left += 1
-        right -= 1
-    
-    return arr
+```csharp
+public static class TwoPointers
+{
+    public static void ReverseArray<T>(T[] arr)
+    {
+        int left = 0, right = arr.Length - 1;
 
-def remove_duplicates_sorted(arr):
-    """Remove duplicates from sorted array"""
-    if not arr:
-        return 0
-    
-    write_index = 1
-    
-    for read_index in range(1, len(arr)):
-        if arr[read_index] != arr[read_index - 1]:
-            arr[write_index] = arr[read_index]
-            write_index += 1
-    
-    return write_index  # New length
+        while (left < right)
+        {
+            // Swap elements
+            T temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
 
-# Example usage
-numbers = [1, 2, 3, 4, 5]
-reverse_array(numbers)
-print(numbers)  # [5, 4, 3, 2, 1]
+            left++;
+            right--;
+        }
+    }
 
-sorted_with_dups = [1, 1, 2, 2, 2, 3, 4, 4, 5]
-new_length = remove_duplicates_sorted(sorted_with_dups)
-print(sorted_with_dups[:new_length])  # [1, 2, 3, 4, 5]
+    public static int RemoveDuplicatesSorted<T>(T[] arr) where T : IEquatable<T>
+    {
+        if (arr.Length == 0)
+            return 0;
+
+        int writeIndex = 1;
+
+        for (int readIndex = 1; readIndex < arr.Length; readIndex++)
+        {
+            if (!arr[readIndex].Equals(arr[readIndex - 1]))
+            {
+                arr[writeIndex] = arr[readIndex];
+                writeIndex++;
+            }
+        }
+
+        return writeIndex; // New length
+    }
+
+    // Example usage
+    public static void DemonstrateTwoPointers()
+    {
+        int[] numbers = {1, 2, 3, 4, 5};
+        ReverseArray(numbers);
+        Console.WriteLine(string.Join(", ", numbers)); // [5, 4, 3, 2, 1]
+
+        int[] sortedWithDups = {1, 1, 2, 2, 2, 3, 4, 4, 5};
+        int newLength = RemoveDuplicatesSorted(sortedWithDups);
+        Console.WriteLine(string.Join(", ", sortedWithDups.Take(newLength))); // [1, 2, 3, 4, 5]
+    }
+}
 ```
 
 ### Sliding Window Technique
-```python
-def max_sum_subarray(arr, k):
-    """Find maximum sum of subarray of length k"""
-    if len(arr) < k:
-        return None
-    
-    # Calculate sum of first window
-    window_sum = sum(arr[:k])
-    max_sum = window_sum
-    
-    # Slide the window
-    for i in range(k, len(arr)):
-        window_sum = window_sum - arr[i - k] + arr[i]
-        max_sum = max(max_sum, window_sum)
-    
-    return max_sum
+```csharp
+public static class SlidingWindow
+{
+    public static int? MaxSumSubarray(int[] arr, int k)
+    {
+        if (arr.Length < k)
+            return null;
 
-# Example usage
-arr = [2, 1, 5, 1, 3, 2]
-print(max_sum_subarray(arr, 3))  # 9 (subarray [5, 1, 3])
+        // Calculate sum of first window
+        int windowSum = 0;
+        for (int i = 0; i < k; i++)
+        {
+            windowSum += arr[i];
+        }
+
+        int maxSum = windowSum;
+
+        // Slide the window
+        for (int i = k; i < arr.Length; i++)
+        {
+            windowSum = windowSum - arr[i - k] + arr[i];
+            maxSum = Math.Max(maxSum, windowSum);
+        }
+
+        return maxSum;
+    }
+
+    // Example usage
+    public static void DemonstrateSlidingWindow()
+    {
+        int[] arr = {2, 1, 5, 1, 3, 2};
+        Console.WriteLine(MaxSumSubarray(arr, 3)); // 9 (subarray [5, 1, 3])
+    }
+}
 ```
 
 ---
 
 ## Multi-dimensional Arrays
 
-### 2D Arrays
-```python
-# Creating 2D arrays in Python
-def create_2d_array(rows, cols, default_value=0):
-    return [[default_value for _ in range(cols)] for _ in range(rows)]
-
-# Don't do this - all rows share the same list!
-# wrong_2d = [[0] * cols] * rows
-
-# Example usage
-matrix = create_2d_array(3, 4, 0)
-matrix[0][0] = 1
-matrix[1][2] = 5
-matrix[2][3] = 9
-
-print("Matrix:")
-for row in matrix:
-    print(row)
-
-# Matrix operations
-def matrix_sum(matrix1, matrix2):
-    """Add two matrices"""
-    rows = len(matrix1)
-    cols = len(matrix1[0])
-    result = create_2d_array(rows, cols)
-    
-    for i in range(rows):
-        for j in range(cols):
-            result[i][j] = matrix1[i][j] + matrix2[i][j]
-    
-    return result
-```
 
 ```csharp
 // 2D arrays in C#
@@ -642,128 +501,177 @@ public static class Matrix2D
 ## Interview Problems
 
 ### 1. Rotate Array
-```python
-def rotate_array_right(arr, k):
-    """Rotate array to the right by k positions"""
-    if not arr:
-        return arr
-    
-    n = len(arr)
-    k = k % n  # Handle k > n
-    
-    # Method 1: Using extra space
-    result = [0] * n
-    for i in range(n):
-        result[(i + k) % n] = arr[i]
-    
-    return result
+```csharp
+public static class ArrayRotation
+{
+    public static int[] RotateArrayRight(int[] arr, int k)
+    {
+        if (arr.Length == 0)
+            return arr;
 
-def rotate_array_inplace(arr, k):
-    """Rotate array in-place using reversal"""
-    if not arr:
-        return arr
-    
-    n = len(arr)
-    k = k % n
-    
-    def reverse(start, end):
-        while start < end:
-            arr[start], arr[end] = arr[end], arr[start]
-            start += 1
-            end -= 1
-    
-    # Reverse entire array
-    reverse(0, n - 1)
-    # Reverse first k elements  
-    reverse(0, k - 1)
-    # Reverse remaining elements
-    reverse(k, n - 1)
-    
-    return arr
+        int n = arr.Length;
+        k = k % n; // Handle k > n
 
-# Example usage
-arr1 = [1, 2, 3, 4, 5, 6, 7]
-print(rotate_array_right(arr1, 3))  # [5, 6, 7, 1, 2, 3, 4]
+        // Method 1: Using extra space
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            result[(i + k) % n] = arr[i];
+        }
 
-arr2 = [1, 2, 3, 4, 5, 6, 7]
-print(rotate_array_inplace(arr2, 3))  # [5, 6, 7, 1, 2, 3, 4]
+        return result;
+    }
+
+    public static void RotateArrayInPlace(int[] arr, int k)
+    {
+        if (arr.Length == 0)
+            return;
+
+        int n = arr.Length;
+        k = k % n;
+
+        // Reverse entire array
+        Reverse(arr, 0, n - 1);
+        // Reverse first k elements
+        Reverse(arr, 0, k - 1);
+        // Reverse remaining elements
+        Reverse(arr, k, n - 1);
+    }
+
+    private static void Reverse(int[] arr, int start, int end)
+    {
+        while (start < end)
+        {
+            int temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+            start++;
+            end--;
+        }
+    }
+
+    // Example usage
+    public static void DemonstrateRotation()
+    {
+        int[] arr1 = {1, 2, 3, 4, 5, 6, 7};
+        int[] rotated = RotateArrayRight(arr1, 3);
+        Console.WriteLine(string.Join(", ", rotated)); // [5, 6, 7, 1, 2, 3, 4]
+
+        int[] arr2 = {1, 2, 3, 4, 5, 6, 7};
+        RotateArrayInPlace(arr2, 3);
+        Console.WriteLine(string.Join(", ", arr2)); // [5, 6, 7, 1, 2, 3, 4]
+    }
+}
 ```
 
 ### 2. Merge Sorted Arrays
-```python
-def merge_sorted_arrays(arr1, arr2):
-    """Merge two sorted arrays"""
-    result = []
-    i = j = 0
-    
-    while i < len(arr1) and j < len(arr2):
-        if arr1[i] <= arr2[j]:
-            result.append(arr1[i])
-            i += 1
-        else:
-            result.append(arr2[j])
-            j += 1
-    
-    # Add remaining elements
-    result.extend(arr1[i:])
-    result.extend(arr2[j:])
-    
-    return result
+```csharp
+public static class ArrayMerging
+{
+    public static int[] MergeSortedArrays(int[] arr1, int[] arr2)
+    {
+        var result = new List<int>();
+        int i = 0, j = 0;
 
-# Example usage
-arr1 = [1, 3, 5, 7]
-arr2 = [2, 4, 6, 8, 9]
-merged = merge_sorted_arrays(arr1, arr2)
-print(merged)  # [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        while (i < arr1.Length && j < arr2.Length)
+        {
+            if (arr1[i] <= arr2[j])
+            {
+                result.Add(arr1[i]);
+                i++;
+            }
+            else
+            {
+                result.Add(arr2[j]);
+                j++;
+            }
+        }
+
+        // Add remaining elements
+        while (i < arr1.Length)
+        {
+            result.Add(arr1[i]);
+            i++;
+        }
+
+        while (j < arr2.Length)
+        {
+            result.Add(arr2[j]);
+            j++;
+        }
+
+        return result.ToArray();
+    }
+
+    // Example usage
+    public static void DemonstrateMerging()
+    {
+        int[] arr1 = {1, 3, 5, 7};
+        int[] arr2 = {2, 4, 6, 8, 9};
+        int[] merged = MergeSortedArrays(arr1, arr2);
+        Console.WriteLine(string.Join(", ", merged)); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    }
+}
 ```
 
 ### 3. Find Peak Element
-```python
-def find_peak_element(arr):
-    """Find a peak element (greater than neighbors)"""
-    n = len(arr)
-    if n == 1:
-        return 0
-    
-    # Check first element
-    if arr[0] > arr[1]:
-        return 0
-    
-    # Check last element
-    if arr[n-1] > arr[n-2]:
-        return n - 1
-    
-    # Check middle elements
-    for i in range(1, n-1):
-        if arr[i] > arr[i-1] and arr[i] > arr[i+1]:
-            return i
-    
-    return -1  # No peak found
+```csharp
+public static class PeakFinding
+{
+    public static int FindPeakElement(int[] arr)
+    {
+        int n = arr.Length;
+        if (n == 1)
+            return 0;
 
-# Binary search approach for better performance
-def find_peak_binary(arr):
-    """Find peak using binary search - O(log n)"""
-    left, right = 0, len(arr) - 1
-    
-    while left < right:
-        mid = (left + right) // 2
-        
-        if arr[mid] > arr[mid + 1]:
-            right = mid
-        else:
-            left = mid + 1
-    
-    return left
+        // Check first element
+        if (arr[0] > arr[1])
+            return 0;
 
-# Example usage
-peaks = [1, 2, 3, 1]
-print(find_peak_element(peaks))  # 2 (element 3 is peak)
-print(find_peak_binary(peaks))   # 2
+        // Check last element
+        if (arr[n - 1] > arr[n - 2])
+            return n - 1;
+
+        // Check middle elements
+        for (int i = 1; i < n - 1; i++)
+        {
+            if (arr[i] > arr[i - 1] && arr[i] > arr[i + 1])
+                return i;
+        }
+
+        return -1; // No peak found
+    }
+
+    // Binary search approach for better performance
+    public static int FindPeakBinary(int[] arr)
+    {
+        int left = 0, right = arr.Length - 1;
+
+        while (left < right)
+        {
+            int mid = left + (right - left) / 2;
+
+            if (arr[mid] > arr[mid + 1])
+                right = mid;
+            else
+                left = mid + 1;
+        }
+
+        return left;
+    }
+
+    // Example usage
+    public static void DemonstratePeakFinding()
+    {
+        int[] peaks = {1, 2, 3, 1};
+        Console.WriteLine(FindPeakElement(peaks)); // 2 (element 3 is peak)
+        Console.WriteLine(FindPeakBinary(peaks));  // 2
+    }
+}
 ```
 
 ## Modern Usage
 
-**Python:** Use `list` - it's a highly optimized dynamic array with many built-in methods
 **C#:** Use `List<T>` for dynamic behavior, arrays for fixed-size scenarios
 **Performance:** Built-in implementations are heavily optimized with native code
 

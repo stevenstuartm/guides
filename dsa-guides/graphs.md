@@ -78,205 +78,98 @@ Model relationships and networks - social networks, maps, dependencies, state ma
 
 ## Graph Implementation
 
-### Python Implementation
-
-#### Adjacency List Representation
-```python
-class Vertex:
-    def __init__(self, value):
-        self.value = value
-        self.edges = {}  # neighbor -> weight
-    
-    def add_edge(self, vertex, weight=1):
-        """Add an edge to another vertex"""
-        self.edges[vertex] = weight
-    
-    def get_edges(self):
-        """Get all neighboring vertices"""
-        return list(self.edges.keys())
-
-class Graph:
-    def __init__(self, directed=False):
-        self.graph_dict = {}  # vertex_value -> Vertex object
-        self.directed = directed
-    
-    def add_vertex(self, vertex):
-        """Add a vertex to the graph"""
-        self.graph_dict[vertex.value] = vertex
-    
-    def add_edge(self, from_vertex, to_vertex, weight=1):
-        """Add an edge between vertices"""
-        self.graph_dict[from_vertex.value].add_edge(to_vertex.value, weight)
-        
-        # For undirected graphs, add edge in both directions
-        if not self.directed:
-            self.graph_dict[to_vertex.value].add_edge(from_vertex.value, weight)
-    
-    def find_path_bfs(self, start_vertex, end_vertex):
-        """Find path using breadth-first search"""
-        queue = [start_vertex]
-        visited = set()
-        parent = {start_vertex: None}
-        
-        while queue:
-            current_vertex = queue.pop(0)
-            
-            if current_vertex in visited:
-                continue
-                
-            visited.add(current_vertex)
-            print(f"Visiting {current_vertex}")
-            
-            if current_vertex == end_vertex:
-                # Reconstruct path
-                path = []
-                while current_vertex is not None:
-                    path.append(current_vertex)
-                    current_vertex = parent[current_vertex]
-                return path[::-1]  # Reverse to get start->end
-            
-            # Add unvisited neighbors to queue
-            neighbors = self.graph_dict[current_vertex].edges.keys()
-            for neighbor in neighbors:
-                if neighbor not in visited and neighbor not in parent:
-                    parent[neighbor] = current_vertex
-                    queue.append(neighbor)
-        
-        return None  # No path found
-    
-    def find_path_dfs(self, start_vertex, end_vertex, visited=None, path=None):
-        """Find path using depth-first search"""
-        if visited is None:
-            visited = set()
-        if path is None:
-            path = []
-        
-        visited.add(start_vertex)
-        path.append(start_vertex)
-        print(f"Visiting {start_vertex}")
-        
-        if start_vertex == end_vertex:
-            return path[:]  # Return copy of path
-        
-        neighbors = self.graph_dict[start_vertex].edges.keys()
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                result = self.find_path_dfs(neighbor, end_vertex, visited.copy(), path[:])
-                if result:
-                    return result
-        
-        return None  # No path found
-    
-    def print_graph(self):
-        """Print the graph structure"""
-        for vertex_value in self.graph_dict:
-            vertex = self.graph_dict[vertex_value]
-            print(f"{vertex_value} connects to:")
-            
-            if len(vertex.edges) == 0:
-                print("  No connections")
-            else:
-                for neighbor, weight in vertex.edges.items():
-                    print(f"  -> {neighbor} (weight: {weight})")
-
-# Example usage
-print("Creating a transportation network:")
-graph = Graph(directed=False)
-
-# Create vertices (cities)
-cities = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"]
-city_vertices = {}
-
-for city in cities:
-    vertex = Vertex(city)
-    city_vertices[city] = vertex
-    graph.add_vertex(vertex)
-
-# Add edges (routes with distances)
-routes = [
-    ("New York", "Chicago", 790),
-    ("New York", "Houston", 1630),
-    ("Los Angeles", "Phoenix", 370),
-    ("Los Angeles", "Houston", 1550),
-    ("Chicago", "Houston", 1080),
-    ("Chicago", "Phoenix", 1440)
-]
-
-for from_city, to_city, distance in routes:
-    graph.add_edge(city_vertices[from_city], city_vertices[to_city], distance)
-
-graph.print_graph()
-
-# Find paths
-print(f"\nBFS path from New York to Phoenix:")
-bfs_path = graph.find_path_bfs("New York", "Phoenix")
-print(f"Path: {' -> '.join(bfs_path) if bfs_path else 'No path found'}")
-
-print(f"\nDFS path from New York to Phoenix:")
-dfs_path = graph.find_path_dfs("New York", "Phoenix")
-print(f"Path: {' -> '.join(dfs_path) if dfs_path else 'No path found'}")
-```
-
 ### C# Implementation
 
+#### Adjacency List Representation
 ```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 public class Vertex<T>
 {
     public T Value { get; set; }
     public Dictionary<T, int> Edges { get; set; }
-    
+
     public Vertex(T value)
     {
         Value = value;
         Edges = new Dictionary<T, int>();
     }
-    
+
+    public void AddEdge(T vertex, int weight = 1)
+    {
+        Edges[vertex] = weight;
+    }
+
+    public List<T> GetEdges()
+    {
+        return Edges.Keys.ToList();
+    }
+}
+
+public class Graph<T>
+{
+    private Dictionary<T, Vertex<T>> graphDict;
+    private bool directed;
+
+    public Graph(bool directed = false)
+    {
+        graphDict = new Dictionary<T, Vertex<T>>();
+        this.directed = directed;
+    }
+
+    public void AddVertex(Vertex<T> vertex)
+    {
+        graphDict[vertex.Value] = vertex;
+    }
+
     public void AddEdge(Vertex<T> fromVertex, Vertex<T> toVertex, int weight = 1)
     {
         graphDict[fromVertex.Value].AddEdge(toVertex.Value, weight);
-        
+
         // For undirected graphs, add edge in both directions
         if (!directed)
         {
             graphDict[toVertex.Value].AddEdge(fromVertex.Value, weight);
         }
     }
-    
+
     public List<T> FindPathBFS(T startVertex, T endVertex)
     {
         var queue = new Queue<T>();
         var visited = new HashSet<T>();
         var parent = new Dictionary<T, T>();
-        
+
         queue.Enqueue(startVertex);
         parent[startVertex] = default(T);
-        
+
         while (queue.Count > 0)
         {
             T currentVertex = queue.Dequeue();
-            
+
             if (visited.Contains(currentVertex))
                 continue;
-                
+
             visited.Add(currentVertex);
             Console.WriteLine($"Visiting {currentVertex}");
-            
+
             if (currentVertex.Equals(endVertex))
             {
                 // Reconstruct path
                 var path = new List<T>();
                 var current = currentVertex;
-                
+
                 while (!EqualityComparer<T>.Default.Equals(current, default(T)))
                 {
                     path.Add(current);
                     current = parent[current];
                 }
-                
+
                 path.Reverse();
                 return path;
             }
-            
+
             // Add unvisited neighbors to queue
             var neighbors = graphDict[currentVertex].Edges.Keys;
             foreach (var neighbor in neighbors)
@@ -288,26 +181,26 @@ public class Vertex<T>
                 }
             }
         }
-        
+
         return null; // No path found
     }
-    
+
     public List<T> FindPathDFS(T startVertex, T endVertex, HashSet<T> visited = null, List<T> path = null)
     {
         if (visited == null)
             visited = new HashSet<T>();
         if (path == null)
             path = new List<T>();
-        
+
         visited.Add(startVertex);
         path.Add(startVertex);
         Console.WriteLine($"Visiting {startVertex}");
-        
+
         if (startVertex.Equals(endVertex))
         {
             return new List<T>(path); // Return copy of path
         }
-        
+
         var neighbors = graphDict[startVertex].Edges.Keys;
         foreach (var neighbor in neighbors)
         {
@@ -322,17 +215,17 @@ public class Vertex<T>
                 }
             }
         }
-        
+
         return null; // No path found
     }
-    
+
     public void PrintGraph()
     {
         foreach (var kvp in graphDict)
         {
             var vertex = kvp.Value;
             Console.WriteLine($"{vertex.Value} connects to:");
-            
+
             if (vertex.Edges.Count == 0)
             {
                 Console.WriteLine("  No connections");
@@ -346,49 +239,69 @@ public class Vertex<T>
             }
         }
     }
+
+    public IEnumerable<T> GetVertices()
+    {
+        return graphDict.Keys;
+    }
+
+    public IEnumerable<(T neighbor, int weight)> GetNeighbors(T vertex)
+    {
+        if (graphDict.ContainsKey(vertex))
+        {
+            return graphDict[vertex].Edges.Select(kvp => (kvp.Key, kvp.Value));
+        }
+        return Enumerable.Empty<(T, int)>();
+    }
 }
 
 // Example usage
-Console.WriteLine("Creating a transportation network:");
-var graph = new Graph<string>(directed: false);
-
-// Create vertices (cities)
-string[] cities = {"New York", "Los Angeles", "Chicago", "Houston", "Phoenix"};
-var cityVertices = new Dictionary<string, Vertex<string>>();
-
-foreach (var city in cities)
+class Program
 {
-    var vertex = new Vertex<string>(city);
-    cityVertices[city] = vertex;
-    graph.AddVertex(vertex);
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Creating a transportation network:");
+        var graph = new Graph<string>(directed: false);
+
+        // Create vertices (cities)
+        string[] cities = {"New York", "Los Angeles", "Chicago", "Houston", "Phoenix"};
+        var cityVertices = new Dictionary<string, Vertex<string>>();
+
+        foreach (var city in cities)
+        {
+            var vertex = new Vertex<string>(city);
+            cityVertices[city] = vertex;
+            graph.AddVertex(vertex);
+        }
+
+        // Add edges (routes with distances)
+        var routes = new[]
+        {
+            ("New York", "Chicago", 790),
+            ("New York", "Houston", 1630),
+            ("Los Angeles", "Phoenix", 370),
+            ("Los Angeles", "Houston", 1550),
+            ("Chicago", "Houston", 1080),
+            ("Chicago", "Phoenix", 1440)
+        };
+
+        foreach (var (fromCity, toCity, distance) in routes)
+        {
+            graph.AddEdge(cityVertices[fromCity], cityVertices[toCity], distance);
+        }
+
+        graph.PrintGraph();
+
+        // Find paths
+        Console.WriteLine("\nBFS path from New York to Phoenix:");
+        var bfsPath = graph.FindPathBFS("New York", "Phoenix");
+        Console.WriteLine($"Path: {(bfsPath != null ? string.Join(" -> ", bfsPath) : "No path found")}");
+
+        Console.WriteLine("\nDFS path from New York to Phoenix:");
+        var dfsPath = graph.FindPathDFS("New York", "Phoenix");
+        Console.WriteLine($"Path: {(dfsPath != null ? string.Join(" -> ", dfsPath) : "No path found")}");
+    }
 }
-
-// Add edges (routes with distances)
-var routes = new[]
-{
-    ("New York", "Chicago", 790),
-    ("New York", "Houston", 1630),
-    ("Los Angeles", "Phoenix", 370),
-    ("Los Angeles", "Houston", 1550),
-    ("Chicago", "Houston", 1080),
-    ("Chicago", "Phoenix", 1440)
-};
-
-foreach (var (fromCity, toCity, distance) in routes)
-{
-    graph.AddEdge(cityVertices[fromCity], cityVertices[toCity], distance);
-}
-
-graph.PrintGraph();
-
-// Find paths
-Console.WriteLine("\nBFS path from New York to Phoenix:");
-var bfsPath = graph.FindPathBFS("New York", "Phoenix");
-Console.WriteLine($"Path: {(bfsPath != null ? string.Join(" -> ", bfsPath) : "No path found")}");
-
-Console.WriteLine("\nDFS path from New York to Phoenix:");
-var dfsPath = graph.FindPathDFS("New York", "Phoenix");
-Console.WriteLine($"Path: {(dfsPath != null ? string.Join(" -> ", dfsPath) : "No path found")}");
 ```
 
 ---
@@ -409,49 +322,65 @@ Console.WriteLine($"Path: {(dfsPath != null ? string.Join(" -> ", dfsPath) : "No
 #### DFS Applications
 
 ##### 1. Detect Cycle in Undirected Graph
-```python
-def has_cycle_undirected(graph, start_vertex):
-    """Detect cycle in undirected graph using DFS"""
-    visited = set()
-    
-    def dfs(vertex, parent):
-        visited.add(vertex)
-        
-        for neighbor in graph.graph_dict[vertex].edges:
-            if neighbor not in visited:
-                if dfs(neighbor, vertex):
-                    return True
-            elif neighbor != parent:
-                # Found back edge (cycle)
-                return True
-        
-        return False
-    
-    return dfs(start_vertex, None)
+```csharp
+public static bool HasCycleUndirected<T>(Graph<T> graph, T startVertex)
+{
+    var visited = new HashSet<T>();
+
+    bool DFS(T vertex, T parent)
+    {
+        visited.Add(vertex);
+
+        foreach (var neighbor in graph.GetNeighbors(vertex).Select(n => n.neighbor))
+        {
+            if (!visited.Contains(neighbor))
+            {
+                if (DFS(neighbor, vertex))
+                    return true;
+            }
+            else if (!neighbor.Equals(parent))
+            {
+                // Found back edge (cycle)
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return DFS(startVertex, default(T));
+}
 ```
 
 ##### 2. Topological Sort
-```python
-def topological_sort(graph):
-    """Topological sort using DFS (for directed acyclic graphs)"""
-    visited = set()
-    stack = []
-    
-    def dfs(vertex):
-        visited.add(vertex)
-        
-        for neighbor in graph.graph_dict[vertex].edges:
-            if neighbor not in visited:
-                dfs(neighbor)
-        
-        stack.append(vertex)  # Add to stack after visiting all children
-    
-    # Visit all vertices
-    for vertex in graph.graph_dict:
-        if vertex not in visited:
-            dfs(vertex)
-    
-    return stack[::-1]  # Reverse to get topological order
+```csharp
+public static List<T> TopologicalSort<T>(Graph<T> graph)
+{
+    var visited = new HashSet<T>();
+    var stack = new Stack<T>();
+
+    void DFS(T vertex)
+    {
+        visited.Add(vertex);
+
+        foreach (var neighbor in graph.GetNeighbors(vertex).Select(n => n.neighbor))
+        {
+            if (!visited.Contains(neighbor))
+                DFS(neighbor);
+        }
+
+        stack.Push(vertex); // Add to stack after visiting all children
+    }
+
+    // Visit all vertices
+    foreach (var vertex in graph.GetVertices())
+    {
+        if (!visited.Contains(vertex))
+            DFS(vertex);
+    }
+
+    return stack.ToList(); // Already in topological order
+}
 ```
 
 ### Breadth-First Search (BFS)
@@ -468,54 +397,75 @@ def topological_sort(graph):
 #### BFS Applications
 
 ##### 1. Shortest Path in Unweighted Graph
-```python
-from collections import deque
+```csharp
+public static List<T> ShortestPathBFS<T>(Graph<T> graph, T start, T end)
+{
+    var queue = new Queue<(T vertex, List<T> path)>();
+    var visited = new HashSet<T> { start };
 
-def shortest_path_bfs(graph, start, end):
-    """Find shortest path using BFS"""
-    queue = deque([(start, [start])])
-    visited = set([start])
-    
-    while queue:
-        vertex, path = queue.popleft()
-        
-        if vertex == end:
-            return path
-        
-        for neighbor in graph.graph_dict[vertex].edges:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                new_path = path + [neighbor]
-                queue.append((neighbor, new_path))
-    
-    return None  # No path found
+    queue.Enqueue((start, new List<T> { start }));
+
+    while (queue.Count > 0)
+    {
+        var (vertex, path) = queue.Dequeue();
+
+        if (vertex.Equals(end))
+            return path;
+
+        foreach (var neighbor in graph.GetNeighbors(vertex).Select(n => n.neighbor))
+        {
+            if (!visited.Contains(neighbor))
+            {
+                visited.Add(neighbor);
+                var newPath = new List<T>(path) { neighbor };
+                queue.Enqueue((neighbor, newPath));
+            }
+        }
+    }
+
+    return null; // No path found
+}
 ```
 
 ##### 2. Count Connected Components
-```python
-def count_connected_components(graph):
-    """Count number of connected components using BFS"""
-    visited = set()
-    components = 0
-    
-    def bfs(start_vertex):
-        queue = deque([start_vertex])
-        visited.add(start_vertex)
-        
-        while queue:
-            vertex = queue.popleft()
-            
-            for neighbor in graph.graph_dict[vertex].edges:
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append(neighbor)
-    
-    for vertex in graph.graph_dict:
-        if vertex not in visited:
-            bfs(vertex)
-            components += 1
-    
-    return components
+```csharp
+public static int CountConnectedComponents<T>(Graph<T> graph)
+{
+    var visited = new HashSet<T>();
+    int components = 0;
+
+    void BFS(T startVertex)
+    {
+        var queue = new Queue<T>();
+        queue.Enqueue(startVertex);
+        visited.Add(startVertex);
+
+        while (queue.Count > 0)
+        {
+            var vertex = queue.Dequeue();
+
+            foreach (var neighbor in graph.GetNeighbors(vertex).Select(n => n.neighbor))
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    visited.Add(neighbor);
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+    }
+
+    foreach (var vertex in graph.GetVertices())
+    {
+        if (!visited.Contains(vertex))
+        {
+            BFS(vertex);
+            components++;
+        }
+    }
+
+    return components;
+}
 ```
 
 ---
@@ -532,87 +482,23 @@ def count_connected_components(graph):
 
 **Time Complexity:** O((V + E) log V) with binary heap
 
-#### Python Implementation
-```python
-import heapq
-from math import inf
-
-def dijkstra(graph, start_vertex):
-    """Find shortest paths from start vertex to all other vertices"""
-    distances = {vertex: inf for vertex in graph.graph_dict}
-    distances[start_vertex] = 0
-    
-    # Priority queue: (distance, vertex)
-    priority_queue = [(0, start_vertex)]
-    visited = set()
-    previous = {vertex: None for vertex in graph.graph_dict}
-    
-    while priority_queue:
-        current_distance, current_vertex = heapq.heappop(priority_queue)
-        
-        if current_vertex in visited:
-            continue
-            
-        visited.add(current_vertex)
-        
-        # Check all neighbors
-        for neighbor, weight in graph.graph_dict[current_vertex].edges.items():
-            distance = current_distance + weight
-            
-            if distance < distances[neighbor]:
-                distances[neighbor] = distance
-                previous[neighbor] = current_vertex
-                heapq.heappush(priority_queue, (distance, neighbor))
-    
-    return distances, previous
-
-def get_shortest_path(previous, start, end):
-    """Reconstruct shortest path from previous pointers"""
-    path = []
-    current = end
-    
-    while current is not None:
-        path.append(current)
-        current = previous[current]
-    
-    if path[-1] != start:
-        return None  # No path exists
-    
-    return path[::-1]  # Reverse to get start->end path
-
-# Example usage with weighted graph
-weighted_graph = Graph(directed=False)
-cities = ["A", "B", "C", "D", "E"]
-
-for city in cities:
-    weighted_graph.add_vertex(Vertex(city))
-
-# Add weighted edges
-edges = [("A", "B", 4), ("A", "C", 2), ("B", "C", 1), ("B", "D", 5), 
-         ("C", "D", 8), ("C", "E", 10), ("D", "E", 2)]
-
-for from_city, to_city, weight in edges:
-    weighted_graph.add_edge(Vertex(from_city), Vertex(to_city), weight)
-
-distances, previous = dijkstra(weighted_graph, "A")
-print("Shortest distances from A:")
-for vertex, distance in distances.items():
-    path = get_shortest_path(previous, "A", vertex)
-    print(f"  To {vertex}: {distance} via {' -> '.join(path) if path else 'No path'}")
-```
 
 #### C# Implementation
 ```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 public static class Dijkstra
 {
-    public static (Dictionary<T, double> distances, Dictionary<T, T> previous) 
+    public static (Dictionary<T, double> distances, Dictionary<T, T> previous)
         FindShortestPaths<T>(Graph<T> graph, T startVertex)
     {
         var distances = new Dictionary<T, double>();
         var previous = new Dictionary<T, T>();
         var priorityQueue = new SortedSet<(double distance, T vertex)>();
         var visited = new HashSet<T>();
-        
+
         // Initialize distances
         foreach (var vertex in graph.GetVertices())
         {
@@ -620,25 +506,25 @@ public static class Dijkstra
             previous[vertex] = default(T);
         }
         distances[startVertex] = 0;
-        
+
         priorityQueue.Add((0, startVertex));
-        
+
         while (priorityQueue.Count > 0)
         {
             var (currentDistance, currentVertex) = priorityQueue.Min;
             priorityQueue.Remove(priorityQueue.Min);
-            
+
             if (visited.Contains(currentVertex))
                 continue;
-                
+
             visited.Add(currentVertex);
-            
+
             // Check all neighbors
             var neighbors = graph.GetNeighbors(currentVertex);
             foreach (var (neighbor, weight) in neighbors)
             {
                 double distance = currentDistance + weight;
-                
+
                 if (distance < distances[neighbor])
                 {
                     distances[neighbor] = distance;
@@ -647,26 +533,65 @@ public static class Dijkstra
                 }
             }
         }
-        
+
         return (distances, previous);
     }
-    
+
     public static List<T> GetShortestPath<T>(Dictionary<T, T> previous, T start, T end)
     {
         var path = new List<T>();
         var current = end;
-        
+
         while (!EqualityComparer<T>.Default.Equals(current, default(T)))
         {
             path.Add(current);
             current = previous[current];
         }
-        
+
         if (!path[path.Count - 1].Equals(start))
             return null; // No path exists
-        
+
         path.Reverse();
         return path;
+    }
+}
+
+// Example usage with weighted graph
+class DijkstraExample
+{
+    static void RunExample()
+    {
+        var weightedGraph = new Graph<string>(directed: false);
+        string[] cities = {"A", "B", "C", "D", "E"};
+
+        var cityVertices = new Dictionary<string, Vertex<string>>();
+        foreach (var city in cities)
+        {
+            var vertex = new Vertex<string>(city);
+            cityVertices[city] = vertex;
+            weightedGraph.AddVertex(vertex);
+        }
+
+        // Add weighted edges
+        var edges = new[]
+        {
+            ("A", "B", 4), ("A", "C", 2), ("B", "C", 1), ("B", "D", 5),
+            ("C", "D", 8), ("C", "E", 10), ("D", "E", 2)
+        };
+
+        foreach (var (fromCity, toCity, weight) in edges)
+        {
+            weightedGraph.AddEdge(cityVertices[fromCity], cityVertices[toCity], weight);
+        }
+
+        var (distances, previous) = Dijkstra.FindShortestPaths(weightedGraph, "A");
+        Console.WriteLine("Shortest distances from A:");
+
+        foreach (var (vertex, distance) in distances)
+        {
+            var path = Dijkstra.GetShortestPath(previous, "A", vertex);
+            Console.WriteLine($"  To {vertex}: {distance} via {(path != null ? string.Join(" -> ", path) : "No path")}");
+        }
     }
 }
 ```
@@ -681,169 +606,268 @@ public static class Dijkstra
 
 A* uses a heuristic function to guide search toward the goal, making it more efficient than Dijkstra for single-target searches.
 
-#### Python Implementation
-```python
-import heapq
-from math import sqrt
+#### C# Implementation
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-def manhattan_distance(pos1, pos2):
-    """Manhattan distance heuristic for grid-based pathfinding"""
-    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+public static class AStar
+{
+    public delegate double HeuristicFunction((int x, int y) pos1, (int x, int y) pos2);
 
-def euclidean_distance(pos1, pos2):
-    """Euclidean distance heuristic"""
-    return sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
+    public static double ManhattanDistance((int x, int y) pos1, (int x, int y) pos2)
+    {
+        return Math.Abs(pos1.x - pos2.x) + Math.Abs(pos1.y - pos2.y);
+    }
 
-def a_star(graph, start, goal, positions, heuristic=manhattan_distance):
-    """A* pathfinding algorithm"""
-    open_set = [(0, start)]
-    came_from = {}
-    
-    g_score = {vertex: float('inf') for vertex in graph.graph_dict}
-    g_score[start] = 0
-    
-    f_score = {vertex: float('inf') for vertex in graph.graph_dict}
-    f_score[start] = heuristic(positions[start], positions[goal])
-    
-    while open_set:
-        current = heapq.heappop(open_set)[1]
-        
-        if current == goal:
-            # Reconstruct path
-            path = []
-            while current in came_from:
-                path.append(current)
-                current = came_from[current]
-            path.append(start)
-            return path[::-1]
-        
-        for neighbor, weight in graph.graph_dict[current].edges.items():
-            tentative_g_score = g_score[current] + weight
-            
-            if tentative_g_score < g_score[neighbor]:
-                came_from[neighbor] = current
-                g_score[neighbor] = tentative_g_score
-                f_score[neighbor] = g_score[neighbor] + heuristic(positions[neighbor], positions[goal])
-                heapq.heappush(open_set, (f_score[neighbor], neighbor))
-    
-    return None  # No path found
+    public static double EuclideanDistance((int x, int y) pos1, (int x, int y) pos2)
+    {
+        return Math.Sqrt(Math.Pow(pos1.x - pos2.x, 2) + Math.Pow(pos1.y - pos2.y, 2));
+    }
 
-# Example usage for grid pathfinding
-grid_graph = Graph(directed=False)
-positions = {
-    'A': (0, 0), 'B': (1, 0), 'C': (2, 0),
-    'D': (0, 1), 'E': (1, 1), 'F': (2, 1),
-    'G': (0, 2), 'H': (1, 2), 'I': (2, 2)
+    public static List<T> FindPath<T>(Graph<T> graph, T start, T goal,
+        Dictionary<T, (int x, int y)> positions, HeuristicFunction heuristic = null)
+    {
+        if (heuristic == null)
+            heuristic = ManhattanDistance;
+
+        var openSet = new SortedSet<(double f, T vertex)>();
+        var cameFrom = new Dictionary<T, T>();
+
+        var gScore = new Dictionary<T, double>();
+        var fScore = new Dictionary<T, double>();
+
+        foreach (var vertex in graph.GetVertices())
+        {
+            gScore[vertex] = double.PositiveInfinity;
+            fScore[vertex] = double.PositiveInfinity;
+        }
+
+        gScore[start] = 0;
+        fScore[start] = heuristic(positions[start], positions[goal]);
+        openSet.Add((fScore[start], start));
+
+        while (openSet.Count > 0)
+        {
+            var (_, current) = openSet.Min;
+            openSet.Remove(openSet.Min);
+
+            if (current.Equals(goal))
+            {
+                // Reconstruct path
+                var path = new List<T>();
+                while (cameFrom.ContainsKey(current))
+                {
+                    path.Add(current);
+                    current = cameFrom[current];
+                }
+                path.Add(start);
+                path.Reverse();
+                return path;
+            }
+
+            foreach (var (neighbor, weight) in graph.GetNeighbors(current))
+            {
+                double tentativeGScore = gScore[current] + weight;
+
+                if (tentativeGScore < gScore[neighbor])
+                {
+                    cameFrom[neighbor] = current;
+                    gScore[neighbor] = tentativeGScore;
+                    fScore[neighbor] = gScore[neighbor] + heuristic(positions[neighbor], positions[goal]);
+                    openSet.Add((fScore[neighbor], neighbor));
+                }
+            }
+        }
+
+        return null; // No path found
+    }
 }
 
-# Create grid connections (each cell connects to adjacent cells)
-for pos in positions:
-    grid_graph.add_vertex(Vertex(pos))
+// Example usage for grid pathfinding
+class AStarExample
+{
+    static void RunExample()
+    {
+        var gridGraph = new Graph<string>(directed: false);
+        var positions = new Dictionary<string, (int x, int y)>
+        {
+            {"A", (0, 0)}, {"B", (1, 0)}, {"C", (2, 0)},
+            {"D", (0, 1)}, {"E", (1, 1)}, {"F", (2, 1)},
+            {"G", (0, 2)}, {"H", (1, 2)}, {"I", (2, 2)}
+        };
 
-# Add edges between adjacent cells
-adjacencies = [
-    ('A', 'B'), ('B', 'C'), ('A', 'D'), ('B', 'E'), ('C', 'F'),
-    ('D', 'E'), ('E', 'F'), ('D', 'G'), ('E', 'H'), ('F', 'I'),
-    ('G', 'H'), ('H', 'I')
-]
+        var vertices = new Dictionary<string, Vertex<string>>();
+        foreach (var (pos, _) in positions)
+        {
+            var vertex = new Vertex<string>(pos);
+            vertices[pos] = vertex;
+            gridGraph.AddVertex(vertex);
+        }
 
-for from_cell, to_cell in adjacencies:
-    grid_graph.add_edge(Vertex(from_cell), Vertex(to_cell), 1)
+        // Add edges between adjacent cells
+        var adjacencies = new[]
+        {
+            ("A", "B"), ("B", "C"), ("A", "D"), ("B", "E"), ("C", "F"),
+            ("D", "E"), ("E", "F"), ("D", "G"), ("E", "H"), ("F", "I"),
+            ("G", "H"), ("H", "I")
+        };
 
-# Find path from A to I
-path = a_star(grid_graph, 'A', 'I', positions)
-print(f"A* path from A to I: {' -> '.join(path) if path else 'No path'}")
+        foreach (var (fromCell, toCell) in adjacencies)
+        {
+            gridGraph.AddEdge(vertices[fromCell], vertices[toCell], 1);
+        }
+
+        // Find path from A to I
+        var path = AStar.FindPath(gridGraph, "A", "I", positions);
+        Console.WriteLine($"A* path from A to I: {(path != null ? string.Join(" -> ", path) : "No path")}");
+    }
+}
 ```
 
 ## Common Interview Problems
 
 ### 1. Number of Islands (2D Grid)
-```python
-def num_islands(grid):
-    """Count number of islands using DFS"""
-    if not grid or not grid[0]:
-        return 0
-    
-    rows, cols = len(grid), len(grid[0])
-    visited = set()
-    islands = 0
-    
-    def dfs(r, c):
-        if (r, c) in visited or r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] == '0':
-            return
-        
-        visited.add((r, c))
-        # Visit all 4 directions
-        dfs(r + 1, c)
-        dfs(r - 1, c)
-        dfs(r, c + 1)
-        dfs(r, c - 1)
-    
-    for r in range(rows):
-        for c in range(cols):
-            if grid[r][c] == '1' and (r, c) not in visited:
-                dfs(r, c)
-                islands += 1
-    
-    return islands
+```csharp
+public static int NumIslands(char[][] grid)
+{
+    if (grid == null || grid.Length == 0 || grid[0].Length == 0)
+        return 0;
+
+    int rows = grid.Length;
+    int cols = grid[0].Length;
+    var visited = new HashSet<(int, int)>();
+    int islands = 0;
+
+    void DFS(int r, int c)
+    {
+        if (visited.Contains((r, c)) || r < 0 || r >= rows ||
+            c < 0 || c >= cols || grid[r][c] == '0')
+            return;
+
+        visited.Add((r, c));
+        // Visit all 4 directions
+        DFS(r + 1, c);
+        DFS(r - 1, c);
+        DFS(r, c + 1);
+        DFS(r, c - 1);
+    }
+
+    for (int r = 0; r < rows; r++)
+    {
+        for (int c = 0; c < cols; c++)
+        {
+            if (grid[r][c] == '1' && !visited.Contains((r, c)))
+            {
+                DFS(r, c);
+                islands++;
+            }
+        }
+    }
+
+    return islands;
+}
 ```
 
 ### 2. Course Schedule (Cycle Detection)
-```python
-def can_finish_courses(num_courses, prerequisites):
-    """Detect if course schedule is possible (no cycles)"""
-    # Build adjacency list
-    graph = [[] for _ in range(num_courses)]
-    for course, prereq in prerequisites:
-        graph[prereq].append(course)
-    
-    # 0 = unvisited, 1 = visiting, 2 = visited
-    state = [0] * num_courses
-    
-    def has_cycle(course):
-        if state[course] == 1:  # Currently visiting - cycle detected
-            return True
-        if state[course] == 2:  # Already processed
-            return False
-        
-        state[course] = 1  # Mark as visiting
-        for next_course in graph[course]:
-            if has_cycle(next_course):
-                return True
-        
-        state[course] = 2  # Mark as visited
-        return False
-    
-    for course in range(num_courses):
-        if state[course] == 0:
-            if has_cycle(course):
-                return False
-    
-    return True
+```csharp
+public static bool CanFinishCourses(int numCourses, int[][] prerequisites)
+{
+    // Build adjacency list
+    var graph = new List<int>[numCourses];
+    for (int i = 0; i < numCourses; i++)
+        graph[i] = new List<int>();
+
+    foreach (var prereq in prerequisites)
+    {
+        int course = prereq[0];
+        int prerequisite = prereq[1];
+        graph[prerequisite].Add(course);
+    }
+
+    // 0 = unvisited, 1 = visiting, 2 = visited
+    var state = new int[numCourses];
+
+    bool HasCycle(int course)
+    {
+        if (state[course] == 1) // Currently visiting - cycle detected
+            return true;
+        if (state[course] == 2) // Already processed
+            return false;
+
+        state[course] = 1; // Mark as visiting
+        foreach (int nextCourse in graph[course])
+        {
+            if (HasCycle(nextCourse))
+                return true;
+        }
+
+        state[course] = 2; // Mark as visited
+        return false;
+    }
+
+    for (int course = 0; course < numCourses; course++)
+    {
+        if (state[course] == 0)
+        {
+            if (HasCycle(course))
+                return false;
+        }
+    }
+
+    return true;
+}
 ```
 
 ### 3. Clone Graph
-```python
-def clone_graph(node):
-    """Deep clone a graph"""
-    if not node:
-        return None
-    
-    clones = {}  # original -> clone mapping
-    
-    def dfs(original):
-        if original in clones:
-            return clones[original]
-        
-        clone = Node(original.val)
-        clones[original] = clone
-        
-        for neighbor in original.neighbors:
-            clone.neighbors.append(dfs(neighbor))
-        
-        return clone
-    
-    return dfs(node)
+```csharp
+public class Node
+{
+    public int val;
+    public IList<Node> neighbors;
+
+    public Node() {
+        val = 0;
+        neighbors = new List<Node>();
+    }
+
+    public Node(int _val) {
+        val = _val;
+        neighbors = new List<Node>();
+    }
+
+    public Node(int _val, List<Node> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+}
+
+public static Node CloneGraph(Node node)
+{
+    if (node == null)
+        return null;
+
+    var clones = new Dictionary<Node, Node>(); // original -> clone mapping
+
+    Node DFS(Node original)
+    {
+        if (clones.ContainsKey(original))
+            return clones[original];
+
+        var clone = new Node(original.val);
+        clones[original] = clone;
+
+        foreach (var neighbor in original.neighbors)
+        {
+            clone.neighbors.Add(DFS(neighbor));
+        }
+
+        return clone;
+    }
+
+    return DFS(node);
+}
 ```
 
 ## Graph Applications in Real World
@@ -858,35 +882,8 @@ def clone_graph(node):
 
 ## Modern Usage
 
-**Python:** Use `networkx` library for complex graph operations
-**C#:** Use graph libraries or implement custom structures for specific needs
+**C#:** Use specialized graph libraries for complex operations or implement custom structures for specific needs
 **Databases:** Neo4j, Amazon Neptune for large-scale graph data
+**Libraries:** Consider using Microsoft.Msagl for visualization or custom implementations for specific algorithms
 
-**Interview focus:** Understand BFS/DFS deeply, know when to use each, implement basic graph operations, recognize graph problems in disguise (trees, 2D grids, state spaces)T vertex, int weight = 1)
-    {
-        Edges[vertex] = weight;
-    }
-    
-    public List<T> GetEdges()
-    {
-        return Edges.Keys.ToList();
-    }
-}
-
-public class Graph<T>
-{
-    private Dictionary<T, Vertex<T>> graphDict;
-    private bool directed;
-    
-    public Graph(bool directed = false)
-    {
-        graphDict = new Dictionary<T, Vertex<T>>();
-        this.directed = directed;
-    }
-    
-    public void AddVertex(Vertex<T> vertex)
-    {
-        graphDict[vertex.Value] = vertex;
-    }
-    
-    public void AddEdge(
+**Interview focus:** Understand BFS/DFS deeply, know when to use each, implement basic graph operations, recognize graph problems in disguise (trees, 2D grids, state spaces)

@@ -33,68 +33,26 @@ LIFO behavior mirrors natural problem patterns - function calls, undo operations
 - **Peek/Top:** O(1)
 - **Search:** O(n)
 
-### Python Implementation
-```python
-class Stack:
-    def __init__(self, limit=1000):
-        self.top_item = None
-        self.size = 0
-        self.limit = limit
-    
-    def push(self, value):
-        """Add element to top of stack"""
-        if self.has_space():
-            item = Node(value)
-            item.set_link_node(self.top_item)
-            self.top_item = item
-            self.size += 1
-            print(f"Pushed {value} onto stack")
-        else:
-            print(f"Stack overflow! No room for {value}")
-    
-    def pop(self):
-        """Remove and return top element"""
-        if not self.is_empty():
-            item_to_remove = self.top_item
-            self.top_item = item_to_remove.get_link_node()
-            self.size -= 1
-            value = item_to_remove.get_value()
-            print(f"Popped {value} from stack")
-            return value
-        else:
-            print("Stack underflow! Stack is empty")
-            return None
-    
-    def peek(self):
-        """View top element without removing it"""
-        if not self.is_empty():
-            return self.top_item.get_value()
-        else:
-            print("Nothing to peek at!")
-            return None
-    
-    def has_space(self):
-        return self.limit > self.size
-    
-    def is_empty(self):
-        return self.size == 0
-    
-    def get_size(self):
-        return self.size
-
-# Example usage
-stack = Stack(5)
-stack.push("First")
-stack.push("Second") 
-stack.push("Third")
-print(f"Top item: {stack.peek()}")  # Third
-print(f"Popped: {stack.pop()}")     # Third
-print(f"Popped: {stack.pop()}")     # Second
-print(f"Size: {stack.get_size()}")  # 1
-```
 
 ### C# Implementation
 ```csharp
+// Node class for linked implementation
+public class Node<T>
+{
+    public T Value { get; set; }
+    public Node<T> LinkNode { get; set; }
+
+    public Node(T value, Node<T> linkNode = null)
+    {
+        Value = value;
+        LinkNode = linkNode;
+    }
+
+    public void SetLinkNode(Node<T> linkNode) => LinkNode = linkNode;
+    public Node<T> GetLinkNode() => LinkNode;
+    public T GetValue() => Value;
+}
+
 public class Stack<T>
 {
     private Node<T> topItem;
@@ -174,81 +132,108 @@ Console.WriteLine($"Size: {stack.Size}");        // 1
 ### Common Queue Applications
 
 #### 1. Breadth-First Search
-```python
-from collections import deque
+```csharp
+public static bool BFS(Dictionary<int, List<int>> graph, int startNode, int target)
+{
+    var queue = new Queue<int>();
+    var visited = new HashSet<int>();
 
-def bfs(graph, start_node, target):
-    queue = deque([start_node])
-    visited = set([start_node])
-    
-    while queue:
-        current_node = queue.popleft()
-        
-        if current_node == target:
-            return True
-        
-        for neighbor in graph[current_node]:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                queue.append(neighbor)
-    
-    return False
+    queue.Enqueue(startNode);
+    visited.Add(startNode);
+
+    while (queue.Count > 0)
+    {
+        int currentNode = queue.Dequeue();
+
+        if (currentNode == target)
+            return true;
+
+        foreach (int neighbor in graph[currentNode])
+        {
+            if (!visited.Contains(neighbor))
+            {
+                visited.Add(neighbor);
+                queue.Enqueue(neighbor);
+            }
+        }
+    }
+
+    return false;
+}
 ```
 
 #### 2. Level-Order Tree Traversal
-```python
-def level_order_traversal(root):
-    if not root:
-        return []
-    
-    queue = deque([root])
-    result = []
-    
-    while queue:
-        node = queue.popleft()
-        result.append(node.value)
-        
-        if node.left:
-            queue.append(node.left)
-        if node.right:
-            queue.append(node.right)
-    
-    return result
+```csharp
+public static List<T> LevelOrderTraversal<T>(TreeNode<T> root)
+{
+    if (root == null)
+        return new List<T>();
+
+    var queue = new Queue<TreeNode<T>>();
+    var result = new List<T>();
+
+    queue.Enqueue(root);
+
+    while (queue.Count > 0)
+    {
+        var node = queue.Dequeue();
+        result.Add(node.Value);
+
+        if (node.Left != null)
+            queue.Enqueue(node.Left);
+        if (node.Right != null)
+            queue.Enqueue(node.Right);
+    }
+
+    return result;
+}
 ```
 
 #### 3. Producer-Consumer with Queue
-```python
-import threading
-from queue import Queue
-import time
+```csharp
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
-def producer(q, items):
-    for item in items:
-        print(f"Producing {item}")
-        q.put(item)
-        time.sleep(0.1)
+public static class ProducerConsumer
+{
+    public static async Task RunProducerConsumer()
+    {
+        var queue = new ConcurrentQueue<string>();
+        var items = new[] { "task1", "task2", "task3", "task4" };
 
-def consumer(q):
-    while True:
-        if not q.empty():
-            item = q.get()
-            print(f"Consuming {item}")
-            q.task_done()
-        else:
-            break
+        var producerTask = Task.Run(() => Producer(queue, items));
+        var consumerTask = Task.Run(() => Consumer(queue));
 
-# Usage
-work_queue = Queue()
-items = ["task1", "task2", "task3", "task4"]
+        await Task.WhenAll(producerTask, consumerTask);
+    }
 
-producer_thread = threading.Thread(target=producer, args=(work_queue, items))
-consumer_thread = threading.Thread(target=consumer, args=(work_queue,))
+    private static void Producer(ConcurrentQueue<string> queue, string[] items)
+    {
+        foreach (var item in items)
+        {
+            Console.WriteLine($"Producing {item}");
+            queue.Enqueue(item);
+            Thread.Sleep(100);
+        }
+    }
 
-producer_thread.start()
-consumer_thread.start()
-
-producer_thread.join()
-consumer_thread.join()
+    private static void Consumer(ConcurrentQueue<string> queue)
+    {
+        while (true)
+        {
+            if (queue.TryDequeue(out string item))
+            {
+                Console.WriteLine($"Consuming {item}");
+            }
+            else
+            {
+                Thread.Sleep(10); // Brief pause if queue is empty
+                if (queue.IsEmpty)
+                    break;
+            }
+        }
+    }
+}
 ```
 
 ## Advanced Variations
@@ -256,168 +241,211 @@ consumer_thread.join()
 ### Deque (Double-Ended Queue)
 Supports insertion and deletion at both ends.
 
-```python
-# Using Python's collections.deque (preferred)
-from collections import deque
-
-dq = deque([1, 2, 3])
-dq.appendleft(0)    # Add to front: [0, 1, 2, 3]
-dq.append(4)        # Add to back: [0, 1, 2, 3, 4]
-dq.popleft()        # Remove from front: [1, 2, 3, 4]
-dq.pop()            # Remove from back: [1, 2, 3]
+```csharp
+// Using C#'s LinkedList for deque-like behavior
+var deque = new LinkedList<int>(new[] { 1, 2, 3 });
+deque.AddFirst(0);    // Add to front: [0, 1, 2, 3]
+deque.AddLast(4);     // Add to back: [0, 1, 2, 3, 4]
+deque.RemoveFirst();  // Remove from front: [1, 2, 3, 4]
+deque.RemoveLast();   // Remove from back: [1, 2, 3]
 ```
 
 ### Priority Queue
 Elements are served based on priority rather than insertion order.
 
-```python
-import heapq
+```csharp
+// Using .NET 6+ PriorityQueue
+public static class PriorityQueueExample
+{
+    public static void DemonstratePriorityQueue()
+    {
+        var pq = new PriorityQueue<string, int>();
 
-class PriorityQueue:
-    def __init__(self):
-        self.elements = []
-    
-    def enqueue(self, item, priority):
-        heapq.heappush(self.elements, (priority, item))
-    
-    def dequeue(self):
-        if self.elements:
-            priority, item = heapq.heappop(self.elements)
-            return item
-        return None
-    
-    def is_empty(self):
-        return len(self.elements) == 0
+        pq.Enqueue("Low priority task", 3);
+        pq.Enqueue("High priority task", 1);
+        pq.Enqueue("Medium priority task", 2);
 
-# Usage
-pq = PriorityQueue()
-pq.enqueue("Low priority task", 3)
-pq.enqueue("High priority task", 1)
-pq.enqueue("Medium priority task", 2)
-
-while not pq.is_empty():
-    print(pq.dequeue())
-# Output: High priority task, Medium priority task, Low priority task
+        while (pq.Count > 0)
+        {
+            Console.WriteLine(pq.Dequeue());
+        }
+        // Output: High priority task, Medium priority task, Low priority task
+    }
+}
 ```
 
 ### Circular Queue (Ring Buffer)
 Fixed-size queue that wraps around when full.
 
-```python
-class CircularQueue:
-    def __init__(self, size):
-        self.size = size
-        self.queue = [None] * size
-        self.head = 0
-        self.tail = 0
-        self.count = 0
-    
-    def enqueue(self, item):
-        if self.count < self.size:
-            self.queue[self.tail] = item
-            self.tail = (self.tail + 1) % self.size
-            self.count += 1
-            return True
-        return False  # Queue is full
-    
-    def dequeue(self):
-        if self.count > 0:
-            item = self.queue[self.head]
-            self.queue[self.head] = None
-            self.head = (self.head + 1) % self.size
-            self.count -= 1
-            return item
-        return None  # Queue is empty
-    
-    def is_full(self):
-        return self.count == self.size
-    
-    def is_empty(self):
-        return self.count == 0
+```csharp
+public class CircularQueue<T>
+{
+    private T[] queue;
+    private int head;
+    private int tail;
+    private int count;
+    private int size;
 
-# Usage
-cq = CircularQueue(3)
-cq.enqueue("A")
-cq.enqueue("B") 
-cq.enqueue("C")
-print(cq.enqueue("D"))  # False - queue is full
-print(cq.dequeue())     # "A"
-cq.enqueue("D")         # Now succeeds
+    public CircularQueue(int size)
+    {
+        this.size = size;
+        queue = new T[size];
+        head = 0;
+        tail = 0;
+        count = 0;
+    }
+
+    public bool Enqueue(T item)
+    {
+        if (count < size)
+        {
+            queue[tail] = item;
+            tail = (tail + 1) % size;
+            count++;
+            return true;
+        }
+        return false; // Queue is full
+    }
+
+    public T Dequeue()
+    {
+        if (count > 0)
+        {
+            T item = queue[head];
+            queue[head] = default(T);
+            head = (head + 1) % size;
+            count--;
+            return item;
+        }
+        return default(T); // Queue is empty
+    }
+
+    public bool IsFull() => count == size;
+    public bool IsEmpty() => count == 0;
+}
+
+// Usage
+var cq = new CircularQueue<string>(3);
+cq.Enqueue("A");
+cq.Enqueue("B");
+cq.Enqueue("C");
+Console.WriteLine(cq.Enqueue("D")); // False - queue is full
+Console.WriteLine(cq.Dequeue());   // "A"
+cq.Enqueue("D");                   // Now succeeds
 ```
 
 ## Interview Problems
 
 ### 1. Implement Queue Using Stacks
-```python
-class QueueUsingStacks:
-    def __init__(self):
-        self.stack1 = []  # For enqueue
-        self.stack2 = []  # For dequeue
-    
-    def enqueue(self, item):
-        self.stack1.append(item)
-    
-    def dequeue(self):
-        if not self.stack2:
-            # Move all elements from stack1 to stack2
-            while self.stack1:
-                self.stack2.append(self.stack1.pop())
-        
-        if self.stack2:
-            return self.stack2.pop()
-        return None
+```csharp
+public class QueueUsingStacks<T>
+{
+    private Stack<T> stack1; // For enqueue
+    private Stack<T> stack2; // For dequeue
+
+    public QueueUsingStacks()
+    {
+        stack1 = new Stack<T>();
+        stack2 = new Stack<T>();
+    }
+
+    public void Enqueue(T item)
+    {
+        stack1.Push(item);
+    }
+
+    public T Dequeue()
+    {
+        if (stack2.Count == 0)
+        {
+            // Move all elements from stack1 to stack2
+            while (stack1.Count > 0)
+            {
+                stack2.Push(stack1.Pop());
+            }
+        }
+
+        if (stack2.Count > 0)
+            return stack2.Pop();
+
+        return default(T);
+    }
+}
 ```
 
 ### 2. Implement Stack Using Queues
-```python
-from collections import deque
+```csharp
+public class StackUsingQueues<T>
+{
+    private Queue<T> queue1;
+    private Queue<T> queue2;
 
-class StackUsingQueues:
-    def __init__(self):
-        self.queue1 = deque()
-        self.queue2 = deque()
-    
-    def push(self, item):
-        # Add to queue2, move all from queue1 to queue2, then swap
-        self.queue2.append(item)
-        while self.queue1:
-            self.queue2.append(self.queue1.popleft())
-        self.queue1, self.queue2 = self.queue2, self.queue1
-    
-    def pop(self):
-        if self.queue1:
-            return self.queue1.popleft()
-        return None
+    public StackUsingQueues()
+    {
+        queue1 = new Queue<T>();
+        queue2 = new Queue<T>();
+    }
+
+    public void Push(T item)
+    {
+        // Add to queue2, move all from queue1 to queue2, then swap
+        queue2.Enqueue(item);
+        while (queue1.Count > 0)
+        {
+            queue2.Enqueue(queue1.Dequeue());
+        }
+
+        // Swap queues
+        var temp = queue1;
+        queue1 = queue2;
+        queue2 = temp;
+    }
+
+    public T Pop()
+    {
+        if (queue1.Count > 0)
+            return queue1.Dequeue();
+
+        return default(T);
+    }
+}
 ```
 
 ### 3. Valid Parentheses (Stack Application)
-```python
-def is_valid_parentheses(s):
-    stack = []
-    mapping = {')': '(', '}': '{', ']': '['}
-    
-    for char in s:
-        if char in mapping:
-            if not stack or stack.pop() != mapping[char]:
-                return False
-        else:
-            stack.append(char)
-    
-    return not stack
+```csharp
+public static bool IsValidParentheses(string s)
+{
+    var stack = new Stack<char>();
+    var mapping = new Dictionary<char, char>
+    {
+        {')', '('},
+        {'}', '{'},
+        {']', '['}
+    };
 
-# Test cases
-print(is_valid_parentheses("()"))       # True
-print(is_valid_parentheses("()[]{}"))   # True
-print(is_valid_parentheses("(]"))       # False
+    foreach (char c in s)
+    {
+        if (mapping.ContainsKey(c))
+        {
+            if (stack.Count == 0 || stack.Pop() != mapping[c])
+                return false;
+        }
+        else
+        {
+            stack.Push(c);
+        }
+    }
+
+    return stack.Count == 0;
+}
+
+// Test cases
+Console.WriteLine(IsValidParentheses("()"));       // True
+Console.WriteLine(IsValidParentheses("()[]{}"));   // True
+Console.WriteLine(IsValidParentheses("(]"));       // False
 ```
 
 ## Modern Usage
-
-**Python:**
-- Use `list` for simple stack (append/pop)
-- Use `collections.deque` for queue operations
-- Use `queue.Queue` for thread-safe operations
-- Use `heapq` for priority queues
 
 **C#:**
 - Use `Stack<T>` for stack operations
@@ -442,56 +470,77 @@ print(is_valid_parentheses("(]"))       # False
 **Interview focus:** Understand when to use each, how to implement with arrays or linked lists, and common applications like expression evaluation and tree traversal. Stack Applications
 
 #### 1. Parentheses Matching
-```python
-def is_balanced(expression):
-    stack = []
-    pairs = {'(': ')', '[': ']', '{': '}'}
-    
-    for char in expression:
-        if char in pairs:  # Opening bracket
-            stack.append(char)
-        elif char in pairs.values():  # Closing bracket
-            if not stack:
-                return False
-            if pairs[stack.pop()] != char:
-                return False
-    
-    return len(stack) == 0
+```csharp
+public static bool IsBalanced(string expression)
+{
+    var stack = new Stack<char>();
+    var pairs = new Dictionary<char, char>
+    {
+        {'(', ')'},
+        {'[', ']'},
+        {'{', '}'}
+    };
 
-# Test cases
-print(is_balanced("()[]{}"))     # True
-print(is_balanced("([{}])"))     # True  
-print(is_balanced("([)]"))       # False
+    foreach (char c in expression)
+    {
+        if (pairs.ContainsKey(c)) // Opening bracket
+        {
+            stack.Push(c);
+        }
+        else if (pairs.ContainsValue(c)) // Closing bracket
+        {
+            if (stack.Count == 0)
+                return false;
+            if (pairs[stack.Pop()] != c)
+                return false;
+        }
+    }
+
+    return stack.Count == 0;
+}
+
+// Test cases
+Console.WriteLine(IsBalanced("()[]{}"));   // True
+Console.WriteLine(IsBalanced("([{}])"));   // True
+Console.WriteLine(IsBalanced("([)]"));     // False
 ```
 
 #### 2. Postfix Expression Evaluation
-```python
-def evaluate_postfix(expression):
-    stack = []
-    operators = {'+', '-', '*', '/'}
-    
-    for token in expression.split():
-        if token in operators:
-            b = stack.pop()
-            a = stack.pop()
-            
-            if token == '+':
-                result = a + b
-            elif token == '-':
-                result = a - b
-            elif token == '*':
-                result = a * b
-            elif token == '/':
-                result = a / b
-                
-            stack.append(result)
-        else:
-            stack.append(float(token))
-    
-    return stack[0]
+```csharp
+public static double EvaluatePostfix(string expression)
+{
+    var stack = new Stack<double>();
+    var operators = new HashSet<string> {"+", "-", "*", "/"};
 
-# Example: "3 4 + 2 *" = (3 + 4) * 2 = 14
-print(evaluate_postfix("3 4 + 2 *"))  # 14.0
+    foreach (string token in expression.Split(' '))
+    {
+        if (operators.Contains(token))
+        {
+            double b = stack.Pop();
+            double a = stack.Pop();
+
+            double result = token switch
+            {
+                "+" => a + b,
+                "-" => a - b,
+                "*" => a * b,
+                "/" => a / b,
+                _ => throw new InvalidOperationException($"Unknown operator: {token}")
+            };
+
+            stack.Push(result);
+        }
+        else
+        {
+            stack.Push(double.Parse(token));
+        }
+    }
+
+    return stack.Peek();
+}
+
+// Example: "3 4 + 2 *" = (3 + 4) * 2 = 14
+Console.WriteLine(EvaluatePostfix("3 4 + 2 *")); // 14.0
 ```
 
 ---
@@ -516,7 +565,7 @@ FIFO behavior matches real-world scenarios - waiting lines, task scheduling, bre
 - LIFO behavior is required
 - Priority matters more than insertion order (use priority queue)
 
-**Modern reality:** Built into most languages. Use `collections.deque` in Python, `Queue<T>` in C#.
+**Modern reality:** Built into most languages. Use `Queue<T>` in C#.
 
 ### Time Complexity
 - **Enqueue (add):** O(1)
@@ -524,85 +573,6 @@ FIFO behavior matches real-world scenarios - waiting lines, task scheduling, bre
 - **Front/Peek:** O(1)
 - **Search:** O(n)
 
-### Python Implementation
-```python
-class Queue:
-    def __init__(self, max_size=None):
-        self.head = None
-        self.tail = None
-        self.max_size = max_size
-        self.size = 0
-    
-    def enqueue(self, value):
-        """Add element to back of queue"""
-        if self.has_space():
-            item_to_add = Node(value)
-            print(f"Adding {value} to the queue")
-            
-            if self.is_empty():
-                self.head = item_to_add
-                self.tail = item_to_add
-            else:
-                self.tail.set_link_node(item_to_add)
-                self.tail = item_to_add
-            
-            self.size += 1
-        else:
-            print("Queue is full! Cannot add more items")
-    
-    def dequeue(self):
-        """Remove and return front element"""
-        if self.get_size() > 0:
-            item_to_remove = self.head
-            print(f"{item_to_remove.get_value()} is being served!")
-            
-            if self.get_size() == 1:
-                self.head = None
-                self.tail = None
-            else:
-                self.head = self.head.get_link_node()
-            
-            self.size -= 1
-            return item_to_remove.get_value()
-        else:
-            print("The queue is empty!")
-            return None
-    
-    def peek(self):
-        """View front element without removing it"""
-        if self.size > 0:
-            return self.head.get_value()
-        else:
-            print("No items in queue!")
-            return None
-    
-    def get_size(self):
-        return self.size
-    
-    def has_space(self):
-        if self.max_size is None:
-            return True
-        else:
-            return self.max_size > self.get_size()
-    
-    def is_empty(self):
-        return self.size == 0
-
-# Example usage
-print("Creating a deli queue with max 5 orders...")
-deli_line = Queue(5)
-
-# Add orders
-orders = ["Sandwich", "Soup", "Salad", "Pizza", "Burger"]
-for order in orders:
-    deli_line.enqueue(order)
-
-print(f"\nNext order up: {deli_line.peek()}")
-
-# Serve orders
-while not deli_line.is_empty():
-    deli_line.dequeue()
-```
 
 ### C# Implementation  
 ```csharp

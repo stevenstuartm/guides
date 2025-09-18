@@ -22,15 +22,13 @@ Finding specific data efficiently is fundamental to most applications. The choic
 - Large datasets (>1000 items)
 - Performance is critical
 
-**Modern reality:** Built into language methods like Python's `in` operator, C#'s `Contains()`. Understand the concept but use built-ins in production.
+**Modern reality:** Built into language methods like C#'s `Contains()`, `IndexOf()`, and LINQ methods. Understand the concept but use built-ins in production.
 
 ### Time Complexity
 - **Best case:** O(1) - element is first
 - **Average case:** O(n/2) = O(n)  
 - **Worst case:** O(n) - element is last or not found
 - **Space complexity:** O(1)
-
-### Python Implementation
 
 ### C# Implementation
 ```csharp
@@ -100,7 +98,7 @@ Console.WriteLine($"All occurrences of 'tuna': [{string.Join(", ", allIndices)}]
 - One-time searches on small data
 - Frequent insertions/deletions (ruins sorted property)
 
-**Modern reality:** Implement this yourself in interviews. Use built-ins like `bisect` in Python, `Array.BinarySearch` in C# for production.
+**Modern reality:** Implement this yourself in interviews. Use built-ins like `Array.BinarySearch()` and `List<T>.BinarySearch()` in C# for production.
 
 ### Time Complexity
 - **All cases:** O(log n)
@@ -108,12 +106,6 @@ Console.WriteLine($"All occurrences of 'tuna': [{string.Join(", ", allIndices)}]
 
 ### Key Insight
 Binary search works by repeatedly dividing the search space in half. Each comparison eliminates half of the remaining elements.
-
-### Python Implementations
-
-#### Recursive Version
-
-#### Iterative Version (Preferred)
 
 ### C# Implementation
 ```csharp
@@ -202,15 +194,12 @@ Console.WriteLine($"Search for 8: {BinarySearch.SearchIterative(testArray, 8)}")
 
 ## Modern Usage
 
-**Python:**
-- Use `bisect` module: `bisect.bisect_left()`, `bisect.bisect_right()` 
-- Use `in` operator for membership testing
-- Use `list.index()` for finding first occurrence
-
 **C#:**
 - Use `Array.BinarySearch()` for arrays
 - Use `List<T>.BinarySearch()` for lists
 - Use `Contains()` for membership testing
+- Use LINQ methods like `Where()`, `First()`, `Any()` for complex searches
+- Use `IndexOf()` and `FindIndex()` for finding positions
 
 ## Key Interview Points
 
@@ -227,5 +216,5 @@ Is data sorted?
 ├─ Yes → Use binary search O(log n)
 └─ No → Can you sort it?
    ├─ Yes → Sort once O(n log n), then binary search for multiple queries
-   └─ No → Use linear search O(n) or hash table O(1) for multiple queries
+   └─ No → Use linear search O(n) or Dictionary<K,V> O(1) for multiple queries
 ```

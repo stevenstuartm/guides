@@ -4,10 +4,10 @@
 
 | Need | First Choice | Alternative | Avoid |
 |------|-------------|-------------|-------|
-| **Fast lookups by key** | Hash Map (dict/Dictionary) | Sorted array + binary search | Linear search in array |
-| **Fast insertion/removal at ends** | Dynamic Array (list/List<T>) | Deque | Linked list (unless memory critical) |
-| **Maintain sorted order during insertions** | Balanced BST or SortedDict | Sorted list + binary insertion | Unbalanced BST |
-| **Priority-based processing** | Heap (heapq/PriorityQueue) | Sorted list | Unsorted array |
+| **Fast lookups by key** | Hash Map (Dictionary<K,V>) | Sorted array + binary search | Linear search in array |
+| **Fast insertion/removal at ends** | Dynamic Array (List<T>) | Deque | Linked list (unless memory critical) |
+| **Maintain sorted order during insertions** | Balanced BST or SortedDictionary<K,V> | Sorted list + binary insertion | Unbalanced BST |
+| **Priority-based processing** | Heap (PriorityQueue<T,P>) | Sorted list | Unsorted array |
 | **Function call management** | Stack | Array with index | Queue |
 | **Task queue/scheduling** | Queue | Array with indices | Stack |
 | **Undo/Redo operations** | Stack of states | Array | Queue |
@@ -29,10 +29,10 @@
 ## Modern Reality Check
 
 ### Always Use Built-ins For:
-- **Sorting:** `sorted()` in Python, `Array.Sort()` in C#
-- **Basic searching:** `in`, `contains()`, `indexOf()`, `find()`
-- **Standard collections:** `list`/`List<T>`, `dict`/`Dictionary<K,V>`, `set`/`HashSet<T>`
-- **String operations:** `split()`, `join()`, `replace()`, regex libraries
+- **Sorting:** `Array.Sort()` and `List<T>.Sort()`
+- **Basic searching:** `Contains()`, `IndexOf()`, `Find()`
+- **Standard collections:** `List<T>`, `Dictionary<K,V>`, `HashSet<T>`
+- **String operations:** `Split()`, `string.Join()`, `Replace()`, Regex class
 
 ### Implement Yourself For:
 - **Interview questions** (they want to see you can think algorithmically)
@@ -48,17 +48,13 @@
 
 ## Language-Specific Advice
 
-### Python
-**Use:** `list` for arrays, `dict` for maps, `set` for uniqueness, `collections.deque` for queues
-**Built-in sorting:** `sorted()` and `list.sort()` use Timsort (hybrid merge/insertion)
-**Searching:** `in` operator, `list.index()`, `bisect` module for sorted data
-**Avoid implementing:** Basic data structures (Python's are highly optimized)
-
 ### C#
 **Use:** `List<T>` for arrays, `Dictionary<K,V>` for maps, `HashSet<T>` for sets, `Queue<T>`/`Stack<T>`
 **Built-in sorting:** `Array.Sort()` and `List<T>.Sort()` use introsort (quicksort + heapsort hybrid)
 **Searching:** `Contains()`, `IndexOf()`, `Array.BinarySearch()` for sorted data
 **Avoid implementing:** LINQ often provides what you need (`.Where()`, `.OrderBy()`, etc.)
+**Collections:** Use `List<T>` instead of arrays for dynamic sizing, `Dictionary<K,V>` for O(1) lookups
+**Performance:** Built-in collections are highly optimized with excellent cache performance
 
 ## Performance Reality
 
@@ -80,7 +76,7 @@
 
 ### Graphs Are Domain-Specific  
 - **Learn DFS/BFS deeply** - they apply to many problems beyond graphs
-- **Use libraries** for complex graph algorithms (NetworkX in Python, graph libraries in C#)
+- **Use libraries** for complex graph algorithms (QuikGraph, Microsoft.Msagl for C#)
 - **Common in:** Social networks, maps, dependency management, game AI
 
 ## Interview vs Production Mindset

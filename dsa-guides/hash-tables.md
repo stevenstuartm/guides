@@ -18,7 +18,7 @@ Provides average O(1) lookups by trading space for time using mathematical hashi
 - Keys don't hash well (cause many collisions)
 - Need to iterate in sorted order
 
-**🏢 Modern reality:** Your go-to data structure. Use `dict` in Python, `Dictionary<K,V>` in C#. Hash tables power most modern software - databases, caches, compilers, etc.
+**🏢 Modern reality:** Your go-to data structure. Use `Dictionary<K,V>` in C#. Hash tables power most modern software - databases, caches, compilers, etc.
 
 ## Time Complexity
 - **Average case:** O(1) for all operations (lookup, insert, delete)
@@ -188,9 +188,9 @@ Console.WriteLine(hashMap.Retrieve("missing")); // null or default
 - Keep load factor < 0.7 for good performance
 - Resize table when load factor gets too high
 
-**Hash Function Quality:** 
+**Hash Function Quality:**
 - Good distribution reduces collisions
-- Python and C# have optimized hash functions for built-in types
+- C# has optimized hash functions for built-in types via `GetHashCode()`
 
 **Collision Strategy Impact:**
 - Linear probing: Good cache performance but clustering issues
@@ -212,8 +212,8 @@ Console.WriteLine(hashMap.Retrieve("missing")); // null or default
 
 ## Modern Usage
 
-**Python:** Use `dict` - highly optimized, ordered since Python 3.7
-**C#:** Use `Dictionary<K,V>` - generic, fast, well-tested
+**C#:** Use `Dictionary<K,V>` - generic, fast, well-tested with excellent performance
+**Collections:** Also consider `ConcurrentDictionary<K,V>` for thread-safe scenarios
 **When to implement custom:** Almost never in production, but common interview topic
 
 The implementations above are educational - they show the core concepts but lack optimizations like dynamic resizing, better hash functions, and robust error handling found in production hash tables.
