@@ -1,6 +1,6 @@
 # Best Practices and Quick Reference
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)
 
 ---
 
@@ -142,4 +142,4 @@ The cybersecurity landscape will continue to evolve with new technologies, threa
 
 ---
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)

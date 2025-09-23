@@ -1,6 +1,6 @@
 # OOP Fundamentals
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)
 
 ---
 
@@ -42,4 +42,4 @@
 
 ---
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)

@@ -1,6 +1,6 @@
 # Security Controls and Defense
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)
 
 ---
 
@@ -106,4 +106,4 @@
 
 ---
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)

@@ -1,6 +1,6 @@
 # SOLID Principles
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)
 
 ---
 
@@ -84,4 +84,4 @@ public class EmployeeRepository { /* persistence logic */ }
 
 ---
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)

@@ -1,6 +1,6 @@
 # Frameworks and Standards
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)
 
 ---
 
@@ -82,4 +82,4 @@ OWASP has released a specialized Top 10 for Large Language Model applications in
 
 ---
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)

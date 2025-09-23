@@ -1,4 +1,4 @@
-[← Back to Table of Contents](table-of-contents.md)
+[← Back to Table of Contents](README.md)
 
 # Graph Fundamentals
 

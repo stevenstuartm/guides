@@ -1,6 +1,6 @@
 # The Result Pattern
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)
 
 ---
 
@@ -321,4 +321,4 @@ public Result<string> ProcessOrder(CreateOrderRequest request)
 
 ---
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)

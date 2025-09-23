@@ -1,6 +1,6 @@
 # Creational Patterns
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)
 
 ---
 
@@ -447,4 +447,4 @@ var clone2 = original.DeepClone(); // Using JSON serialization
 
 ---
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)

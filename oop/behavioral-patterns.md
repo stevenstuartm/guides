@@ -1,6 +1,6 @@
 # Behavioral Patterns
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)
 
 ---
 
@@ -987,4 +987,4 @@ userServiceWithoutLogger.CreateUser("Jane");
 
 ---
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)

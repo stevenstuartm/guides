@@ -1,6 +1,6 @@
 # Structural Patterns
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)
 
 ---
 
@@ -630,4 +630,4 @@ var data2 = await proxy.GetData("user123"); // Cache hit
 
 ---
 
-[← Back to OOP Study Guide](oop-toc.md)
+[← Back to OOP Study Guide](README.md)

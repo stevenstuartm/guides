@@ -1,6 +1,6 @@
 # Incident Response and Recovery
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)
 
 ---
 
@@ -89,4 +89,4 @@ NIST recommends expanding beyond traditional "incident handler" teams to include
 
 ---
 
-[← Back to Security Study Guide](security-toc.md)
+[← Back to Security Study Guide](README.md)
