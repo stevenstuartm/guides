@@ -16,7 +16,7 @@ A comprehensive collection of study guides covering essential software engineeri
 - **[Security](./security/README.md)** - Security fundamentals, threat landscape, frameworks, compliance, and modern practices
 
 ### Development & Operations
-- **[Software Development Lifecycle](./sdlc.md)** - SDLC methodologies, project management, and development best practices
+- **[Software Development Lifecycle](./sdlc/README.md)** - SDLC methodologies, UML diagrams, project management, and development best practices
 - **[Deployment Strategies](./deployment-strategies.md)** - CI/CD, containerization, cloud deployment, and release management
 - **[Observability Fundamentals](./observability-fundamentals.md)** - Monitoring, logging, tracing, and system observability
 
