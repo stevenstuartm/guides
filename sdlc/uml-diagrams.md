@@ -166,57 +166,12 @@ Class diagrams show the static structure of a system by modeling classes, their 
 - **Multiplicity**: Number of instances in relationships
 - **Visibility**: Public (+), private (-), protected (#)
 
-### Example: E-commerce System
+### Illustrations
 
-**PlantUML Source Code:**
-```plantuml
-@startuml
-class Customer {
-  -customerId: String
-  -name: String
-  -email: String
-  +placeOrder(): Order
-  +viewOrderHistory(): List<Order>
-}
-
-class Order {
-  -orderId: String
-  -orderDate: Date
-  -status: OrderStatus
-  -totalAmount: BigDecimal
-  +addItem(item: OrderItem): void
-  +calculateTotal(): BigDecimal
-  +updateStatus(status: OrderStatus): void
-}
-
-class OrderItem {
-  -quantity: int
-  -unitPrice: BigDecimal
-  +getSubtotal(): BigDecimal
-}
-
-class Product {
-  -productId: String
-  -name: String
-  -description: String
-  -price: BigDecimal
-  -stockQuantity: int
-  +updateStock(quantity: int): void
-}
-
-Customer ||--o{ Order : places
-Order ||--o{ OrderItem : contains
-OrderItem }o--|| Product : references
-
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
-@enduml
-```
+![alt text](images/ClassDiagram_perspectives.png)
+![alt text](images/ClassDiagram_Parameters.png)
+![alt text](images/ClassDiagram_Relationships.png)
+![alt text](images//ClassDiagram_Full.png)
 
 ### Best Practices
 - Keep diagrams focused on specific subsystems
@@ -245,38 +200,9 @@ Sequence diagrams show how objects interact over time, focusing on the order of 
 
 ### Example: User Authentication Flow
 
-**PlantUML Source Code:**
-```plantuml
-@startuml
-actor User
-participant "Web App" as App
-participant "Auth Service" as Auth
-participant Database
+### Illustrations
 
-User -> App: Login Request\n(username, password)
-activate App
-
-App -> Auth: Authenticate\n(credentials)
-activate Auth
-
-Auth -> Database: Query User\n(username)
-activate Database
-Database --> Auth: User Data
-deactivate Database
-
-Auth -> Auth: Validate Password
-alt Valid Credentials
-    Auth --> App: Success\n(JWT Token)
-    App --> User: Login Success\n(Redirect to Dashboard)
-else Invalid Credentials
-    Auth --> App: Authentication Failed
-    App --> User: Error Message
-end
-
-deactivate Auth
-deactivate App
-@enduml
-```
+![alt text](images/SequenceDiagram_Full.png)
 
 ### Best Practices
 - Focus on one scenario per diagram
@@ -303,37 +229,10 @@ Use case diagrams capture functional requirements by showing how users (actors) 
 - **System Boundary**: Rectangle containing use cases
 - **Relationships**: Include, extend, generalization
 
-### Example: Library Management System
+### Illustrations
 
-```plantuml
-@startuml
-left to right direction
-
-actor "Library Member" as Member
-actor "Librarian" as Librarian
-actor "System Administrator" as Admin
-
-rectangle "Library Management System" {
-  Member -- (Search Books)
-  Member -- (Borrow Book)
-  Member -- (Return Book)
-  Member -- (View Account)
-
-  Librarian -- (Manage Books)
-  Librarian -- (Process Returns)
-  Librarian -- (Generate Reports)
-
-  Admin -- (Manage Users)
-  Admin -- (System Configuration)
-
-  (Borrow Book) .> (Check Availability) : include
-  (Return Book) .> (Calculate Fines) : include
-  (Manage Books) <|-- (Add New Book)
-  (Manage Books) <|-- (Update Book Info)
-  (Manage Books) <|-- (Remove Book)
-}
-@enduml
-```
+![alt text](images/UseCase_Summary.png)
+![alt text](images/UseCase_Full.png)
 
 ### Best Practices
 - Keep use cases at appropriate level of detail
@@ -360,38 +259,11 @@ Activity diagrams model workflows, business processes, and complex algorithms sh
 - **Fork/Join**: Parallel processing flows
 - **Start/End Nodes**: Initial and final states
 
-### Example: Order Processing Workflow
+### Illustrations
 
-```plantuml
-@startuml
-start
-
-:Receive Order;
-
-if (Payment Valid?) then (yes)
-  :Process Payment;
-  if (Items Available?) then (yes)
-    fork
-      :Update Inventory;
-    fork again
-      :Prepare Shipment;
-    fork again
-      :Send Confirmation Email;
-    end fork
-    :Ship Order;
-    :Send Tracking Info;
-  else (no)
-    :Backorder Items;
-    :Notify Customer;
-  endif
-else (no)
-  :Reject Order;
-  :Notify Customer;
-endif
-
-stop
-@enduml
-```
+![alt text](images/ActivityDiagram_Summary.png)
+![alt text](images/ActivityDiagram_Full.png)
+![alt text](images/ActivityDiagram_Swimlane_Full.png)
 
 ### Best Practices
 - Start with high-level activities, then refine
@@ -418,45 +290,10 @@ Component diagrams show how a system is organized into components and their depe
 - **Dependencies**: Arrows showing relationships
 - **Ports**: Connection points for interfaces
 
-### Example: Web Application Architecture
+### Illustrations
 
-```plantuml
-@startuml
-package "Web Layer" {
-  [Web Controller]
-  [Authentication Filter]
-}
-
-package "Service Layer" {
-  [User Service]
-  [Order Service]
-  [Payment Service]
-}
-
-package "Data Layer" {
-  [User Repository]
-  [Order Repository]
-  [Payment Gateway]
-}
-
-package "External Systems" {
-  [Email Service]
-  [SMS Service]
-}
-
-[Web Controller] --> [User Service]
-[Web Controller] --> [Order Service]
-[Authentication Filter] --> [User Service]
-
-[User Service] --> [User Repository]
-[Order Service] --> [Order Repository]
-[Order Service] --> [Payment Service]
-[Payment Service] --> [Payment Gateway]
-
-[User Service] --> [Email Service]
-[Order Service] --> [SMS Service]
-@enduml
-```
+![alt text](images/ComponentDiagram_Summary.png)
+![alt text](images/ComponentDiagram_Full.png)
 
 ### Best Practices
 - Group related components into packages
@@ -483,41 +320,10 @@ Deployment diagrams show the physical deployment of software components on hardw
 - **Communication Paths**: Network connections
 - **Deployment Specifications**: Configuration details
 
-### Example: Microservices Deployment
+### Illustrations
 
-```plantuml
-@startuml
-node "Load Balancer" as LB {
-  artifact "Nginx"
-}
-
-node "Web Servers" as WS {
-  artifact "React App" as React
-  artifact "API Gateway" as Gateway
-}
-
-node "Application Servers" as AS {
-  artifact "User Service" as UserSvc
-  artifact "Order Service" as OrderSvc
-  artifact "Payment Service" as PaySvc
-}
-
-node "Database Cluster" as DB {
-  artifact "PostgreSQL Primary" as DBPrimary
-  artifact "PostgreSQL Replica" as DBReplica
-}
-
-cloud "External Services" as External {
-  artifact "Payment Gateway"
-  artifact "Email Service"
-}
-
-LB --> WS : HTTPS
-WS --> AS : HTTP/REST
-AS --> DB : SQL/TCP
-AS --> External : HTTPS/API
-@enduml
-```
+![alt text](images/DeploymentDiagram_Summary.png)
+![alt text](images/DeploymentDiagram_Full.png)
 
 ### Best Practices
 - Show actual deployment topology
